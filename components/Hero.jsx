@@ -15,7 +15,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col justify-center h-[56vh] lg:h-[64vh]">
         <div className="mt-8 md:mt-0 max-w-2xl flex flex-col items-end">
           <h1 className="text-4xl md:text-5xl font-extrabold leading-snug text-white text-right">
-            تعلّم اليوم، لِتتقدَّ غدًا
+            تعلّم اليوم، لِتقودَّ غدًا
           </h1>
           <p className="mt-3 text-lg text-white/80 text-right">
             تعلّم.. طوِّر.. وحقق نجاحك مع مركز المصباح للتدريب الفني والعمالة

@@ -1,12 +1,15 @@
-import './globals.css';
+import "./globals.css";
+import { Cairo } from "next/font/google";
 
-// لو عندك خطوط عربية، ممكن تضيف هنا أو تستبدلها
-// مثال:
-// import { Geist, Geist_Mono } from './fonts';
+// استدعاء الخط
+const cairo = Cairo({
+  subsets: ["arabic"],
+  weight: ["400", "700"], // الأوزان الممكن تختارها
+});
 
 export const metadata = {
-  title: 'مركز المصباح',
-  description: 'أكاديمية تدريب متكاملة لتطوير المهارات',
+  title: "مركز المصباح",
+  description: "أكاديمية تدريب متكاملة لتطوير المهارات",
 };
 
 export default function RootLayout({ children }) {
@@ -16,7 +19,7 @@ export default function RootLayout({ children }) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="bg-white text-gray-900 font-sans">
+      <body className={`${cairo.className} bg-white text-gray-900`}>
         {children}
       </body>
     </html>
