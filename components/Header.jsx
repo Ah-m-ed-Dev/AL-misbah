@@ -26,7 +26,16 @@ export default function Header() {
   const [authMode, setAuthMode] = useState(null); // "login" | "register"
   const [user, setUser] = useState(null); // حالة المستخدم
 
-  const handleLogout = () => setUser(null);
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+
+  useEffect(() => {
+    // تحميل المستخدم من localStorage لو كان مسجل دخول
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
 
   return (
     <header className="sticky top-0 z-40">
@@ -169,7 +178,6 @@ function LangCurrency() {
 
   return (
     <div className="hidden sm:flex items-center gap-3 text-sm">
-      {/* العملة */}
       <div className="relative group">
         <button className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
           <span className="text-xs text-[#7b0b4c]">$</span>
@@ -188,7 +196,6 @@ function LangCurrency() {
         </div>
       </div>
 
-      {/* اللغة */}
       <div className="relative group">
         <button className="px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
           {lang}
@@ -209,9 +216,9 @@ function LangCurrency() {
   );
 }
 
-/* 🔑 تسجيل الدخول/التسجيل Modal (JS خالص) */
+/* 🔑 تسجيل الدخول/التسجيل Modal */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
-  const [tab, setTab] = useState("phone");
+  const [tab, setTab] = useState("email");
   const router = useRouter();
 
   useEffect(() => {
@@ -222,14 +229,51 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (mode === "login") {
-      setUser({ name: "أحمد" }); // تسجيل دخول تجريبي
+
+    const users = [
+      {
+        name: "المدير العام",
+        email: "admin@misbah.com",
+        password: "123456",
+        role: "general_manager",
+      },
+      {
+        name: "المدير التنفيذي",
+        email: "executive@misbah.com",
+        password: "123456",
+        role: "executive",
+      },
+      {
+        name: "مدير الموارد البشرية",
+        email: "atag4052@gmail.com",
+        password: "123456",
+        role: "hr",
+      },
+    ];
+
+    const form = new FormData(e.target);
+    const email = form.get("email");
+    const password = form.get("password");
+
+    const foundUser = users.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (foundUser) {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: foundUser.name,
+          email: foundUser.email,
+          role: foundUser.role,
+        })
+      );
+
+      setUser(foundUser);
       onClose();
-      router.push("/dashboard"); // انتقال بعد الدخول
+      router.push("/dashboard");
     } else {
-      setUser({ name: "مستخدم جديد" });
-      onClose();
-      router.push("/dashboard"); // أو /welcome حسب ما تحب
+      alert("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!");
     }
   };
 
@@ -242,7 +286,6 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
         className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* زر إغلاق */}
         <button
           onClick={onClose}
           className="absolute top-3 left-3 text-gray-500 hover:text-gray-700"
@@ -250,71 +293,28 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
           ✕
         </button>
 
-        {/* العنوان */}
         <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
           {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
         </h2>
 
-        {/* Tabs */}
-        <div className="flex justify-center gap-8 mb-6 text-sm border-b">
-          <button
-            onClick={() => setTab("phone")}
-            className={`pb-2 ${
-              tab === "phone"
-                ? "text-[#7b0b4c] border-b-2 border-[#7b0b4c]"
-                : "text-gray-500 hover:text-[#7b0b4c]"
-            }`}
-          >
-            رقم الهاتف 📞
-          </button>
-          <button
-            onClick={() => setTab("email")}
-            className={`pb-2 ${
-              tab === "email"
-                ? "text-[#7b0b4c] border-b-2 border-[#7b0b4c]"
-                : "text-gray-500 hover:text-[#7b0b4c]"
-            }`}
-          >
-            البريد الإلكتروني 📧
-          </button>
-        </div>
-
-        {/* النموذج */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {tab === "phone" ? (
-            <div className="flex gap-2">
-              <div className="w-1/2">
-                <label className="block text-sm mb-1">الدولة</label>
-                <select className="w-full px-3 py-2 border rounded-lg">
-                  <option>الأردن</option>
-                  <option>السعودية</option>
-                  <option>مصر</option>
-                </select>
-              </div>
-              <div className="w-1/2">
-                <label className="block text-sm mb-1">رقم الهاتف</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border rounded-lg"
-                  placeholder="+962"
-                />
-              </div>
-            </div>
-          ) : (
-            <div>
-              <label className="block text-sm mb-1">البريد الإلكتروني</label>
-              <input
-                type="email"
-                className="w-full px-3 py-2 border rounded-lg"
-                placeholder="example@mail.com"
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-sm mb-1">البريد الإلكتروني</label>
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full px-3 py-2 border rounded-lg"
+              placeholder="example@mail.com"
+            />
+          </div>
 
           <div>
             <label className="block text-sm mb-1">كلمة المرور</label>
             <input
               type="password"
+              name="password"
+              required
               className="w-full px-3 py-2 border rounded-lg"
             />
           </div>
@@ -327,7 +327,6 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
           </button>
         </form>
 
-        {/* روابط إضافية */}
         {mode === "login" && (
           <div className="mt-6 text-sm text-center space-y-2">
             <p>

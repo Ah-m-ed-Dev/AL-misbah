@@ -1,179 +1,265 @@
 "use client";
 
-import { useState } from "react";
-import { PlusCircle, Layers, Image, Settings } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PlusCircle, Layers, Settings, LogOut, Trash2, Edit3, Check, X } from "lucide-react";
 
 export default function Dashboard() {
   const [courses, setCourses] = useState([]);
-  const [heroBg, setHeroBg] = useState("url('/images/hero.jpg')");
   const [form, setForm] = useState({ title: "", price: "", desc: "" });
-  const [activeTab, setActiveTab] = useState("courses"); // tab افتراضي
+  const [editCourse, setEditCourse] = useState(null);
+  const [activeTab, setActiveTab] = useState("courses");
 
+  // تحميل البيانات من localStorage عند فتح الصفحة
+  useEffect(() => {
+    const saved = localStorage.getItem("courses");
+    if (saved) setCourses(JSON.parse(saved));
+  }, []);
+
+  // حفظ تلقائي عند أي تغيير
+  useEffect(() => {
+    localStorage.setItem("courses", JSON.stringify(courses));
+  }, [courses]);
+
+  // إضافة كورس جديد
   const addCourse = (e) => {
     e.preventDefault();
     if (!form.title.trim()) return;
-    setCourses([...courses, form]);
+    const newCourse = { ...form, id: Date.now() };
+    setCourses([newCourse, ...courses]);
     setForm({ title: "", price: "", desc: "" });
   };
 
+  // حذف كورس
+  const deleteCourse = (id) => {
+    setCourses(courses.filter((c) => c.id !== id));
+  };
+
+  // بدء تعديل كورس
+  const startEdit = (course) => {
+    setEditCourse(course.id);
+    setForm({ title: course.title, price: course.price, desc: course.desc });
+  };
+
+  // حفظ التعديلات
+  const saveEdit = (id) => {
+    setCourses(
+      courses.map((c) =>
+        c.id === id ? { ...c, title: form.title, price: form.price, desc: form.desc } : c
+      )
+    );
+    setEditCourse(null);
+    setForm({ title: "", price: "", desc: "" });
+  };
+
+  // إلغاء التعديل
+  const cancelEdit = () => {
+    setEditCourse(null);
+    setForm({ title: "", price: "", desc: "" });
+  };
+
+  const tabs = [
+    { id: "courses", label: "الكورسات", icon: Layers },
+    { id: "settings", label: "الإعدادات", icon: Settings },
+  ];
+
   return (
-    <div className="min-h-screen flex font-sans text-gray-800">
+    <div className="min-h-screen flex bg-gradient-to-br from-[#f7f1f5] to-[#fdfdfd] text-gray-800 font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-[#7b0b4c] to-[#5e0839] text-white p-6 space-y-6 shadow-2xl relative z-10">
-        <h2 className="text-2xl font-bold mb-8 text-center tracking-wide">
-          لوحة التحكم
-        </h2>
-        <button
-          onClick={() => setActiveTab("courses")}
-          className={`flex items-center gap-2 w-full text-right p-3 rounded-lg transition ${
-            activeTab === "courses" ? "bg-white/20" : "hover:bg-white/10"
-          }`}
-        >
-          <Layers size={18} /> الكورسات
-        </button>
-        <button
-          onClick={() => setActiveTab("background")}
-          className={`flex items-center gap-2 w-full text-right p-3 rounded-lg transition ${
-            activeTab === "background" ? "bg-white/20" : "hover:bg-white/10"
-          }`}
-        >
-          <Image size={18} /> الخلفية
-        </button>
-        <button
-          onClick={() => setActiveTab("settings")}
-          className={`flex items-center gap-2 w-full text-right p-3 rounded-lg transition ${
-            activeTab === "settings" ? "bg-white/20" : "hover:bg-white/10"
-          }`}
-        >
-          <Settings size={18} /> الإعدادات
+      <aside className="w-64 bg-[#7b0b4c] text-white p-6 flex flex-col justify-between shadow-2xl">
+        <div>
+          <h2 className="text-3xl font-extrabold mb-10 text-center tracking-wide">
+            لوحة التحكم
+          </h2>
+          <nav className="space-y-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center justify-start gap-3 w-full text-right p-3 rounded-lg transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? "bg-white/20 shadow-md"
+                    : "hover:bg-white/10"
+                }`}
+              >
+                <tab.icon size={18} /> {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <button className="flex items-center justify-center gap-2 mt-10 bg-white/20 hover:bg-white/30 transition rounded-lg py-2 text-sm font-semibold">
+          <LogOut size={16} /> تسجيل الخروج
         </button>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-10 relative overflow-hidden bg-gray-50">
-        {/* Hero Section */}
-        <section
-          className="h-64 rounded-2xl shadow-lg mb-12 relative overflow-hidden"
-          style={{
-            background: heroBg,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
+      {/* Main */}
+      <main className="flex-1 p-10 overflow-y-auto relative">
+        <motion.section
+          layout
+          className="h-56 rounded-2xl shadow-lg mb-12 relative overflow-hidden bg-[#7b0b4c]"
         >
           <div className="absolute inset-0 bg-black/40" />
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <h1 className="text-4xl font-extrabold text-white drop-shadow">
-              أهلاً بك في لوحة التحكم
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="relative z-10 flex items-center justify-center h-full"
+          >
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg text-center">
+              إدارة الكورسات
             </h1>
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
 
-        <div className="relative z-10">
-          {/* الكورسات */}
+        {/* Tabs */}
+        <AnimatePresence mode="wait">
           {activeTab === "courses" && (
-            <>
-              <h2 className="text-2xl font-extrabold text-[#7b0b4c] mb-8 drop-shadow">
-                إدارة الكورسات
-              </h2>
-
-              <form
-                onSubmit={addCourse}
-                className="space-y-4 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-lg max-w-md border border-gray-100"
-              >
-                <input
-                  type="text"
-                  placeholder="اسم الكورس"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition text-gray-800 placeholder-gray-500"
-                />
-                <input
-                  type="text"
-                  placeholder="السعر"
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })}
-                  className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition text-gray-800 placeholder-gray-500"
-                />
-                <textarea
-                  placeholder="الوصف"
-                  value={form.desc}
-                  onChange={(e) => setForm({ ...form, desc: e.target.value })}
-                  className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition text-gray-800 placeholder-gray-500"
-                />
-                <button
-                  type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#7b0b4c] to-[#5e0839] text-white py-2 rounded-lg hover:opacity-90 transition font-semibold shadow"
+            <motion.div
+              key="courses"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              {/* نموذج الإضافة */}
+              {!editCourse && (
+                <form
+                  onSubmit={addCourse}
+                  className="space-y-4 bg-white/90 backdrop-blur-xl p-6 rounded-2xl shadow-lg max-w-md border border-gray-100"
                 >
-                  <PlusCircle size={18} /> إضافة كورس
-                </button>
-              </form>
-
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {courses.map((c, i) => (
-                  <div
-                    key={i}
-                    className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition transform hover:-translate-y-1"
+                  <input
+                    type="text"
+                    placeholder="اسم الكورس"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition"
+                  />
+                  <input
+                    type="text"
+                    placeholder="السعر"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition"
+                  />
+                  <textarea
+                    placeholder="الوصف"
+                    value={form.desc}
+                    onChange={(e) => setForm({ ...form, desc: e.target.value })}
+                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#7b0b4c] to-[#5e0839] text-white py-2 rounded-lg hover:opacity-90 transition font-semibold shadow"
                   >
-                    <h3 className="font-bold text-xl text-[#7b0b4c]">{c.title}</h3>
-                    <p className="text-gray-600 mt-2">{c.desc}</p>
-                    <p className="mt-4 font-semibold text-lg text-gray-800">
-                      {c.price} $
-                    </p>
-                  </div>
-                ))}
+                    <PlusCircle size={18} /> إضافة كورس
+                  </button>
+                </form>
+              )}
+
+              {/* الكورسات */}
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <AnimatePresence>
+                  {courses.map((c) => (
+                    <motion.div
+                      key={c.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -30 }}
+                      layout
+                      whileHover={{ y: -5 }}
+                      className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition relative"
+                    >
+                      {editCourse === c.id ? (
+                        <>
+                          <input
+                            type="text"
+                            value={form.title}
+                            onChange={(e) =>
+                              setForm({ ...form, title: e.target.value })
+                            }
+                            className="w-full border px-3 py-2 mb-2 rounded"
+                          />
+                          <input
+                            type="text"
+                            value={form.price}
+                            onChange={(e) =>
+                              setForm({ ...form, price: e.target.value })
+                            }
+                            className="w-full border px-3 py-2 mb-2 rounded"
+                          />
+                          <textarea
+                            value={form.desc}
+                            onChange={(e) =>
+                              setForm({ ...form, desc: e.target.value })
+                            }
+                            className="w-full border px-3 py-2 mb-2 rounded"
+                          />
+                          <div className="flex justify-end gap-3">
+                            <button
+                              onClick={() => saveEdit(c.id)}
+                              className="text-green-600 hover:text-green-800"
+                            >
+                              <Check size={20} />
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="text-gray-400 hover:text-gray-600"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => deleteCourse(c.id)}
+                            className="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition"
+                            title="حذف الكورس"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                          <button
+                            onClick={() => startEdit(c)}
+                            className="absolute top-3 right-3 text-gray-400 hover:text-blue-500 transition"
+                            title="تعديل الكورس"
+                          >
+                            <Edit3 size={18} />
+                          </button>
+                          <h3 className="font-bold text-xl text-[#7b0b4c]">
+                            {c.title}
+                          </h3>
+                          <p className="text-gray-600 mt-2 line-clamp-3">
+                            {c.desc}
+                          </p>
+                          <p className="mt-4 font-semibold text-lg text-gray-800">
+                            {c.price} $
+                          </p>
+                        </>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
-            </>
+            </motion.div>
           )}
 
-          {/* الخلفية */}
-          {activeTab === "background" && (
-            <div className="bg-white/90 backdrop-blur-lg p-6 rounded-2xl shadow-md max-w-sm border">
-              <h2 className="text-lg font-bold mb-4 text-[#7b0b4c]">
-                🖼️ تغيير خلفية الهيرو
-              </h2>
-
-              {/* رابط صورة من الإنترنت */}
-              <input
-                type="text"
-                placeholder="ضع رابط صورة"
-                onChange={(e) => setHeroBg(`url('${e.target.value}')`)}
-                className="w-full border px-4 py-2 rounded-lg mb-4 text-gray-800 placeholder-gray-500"
-              />
-
-              {/* اختيار صورة من الجهاز */}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setHeroBg(`url('${reader.result}')`);
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
-                className="w-full mb-4"
-              />
-
-              {/* اختيار لون ثابت */}
-              <input
-                type="color"
-                onChange={(e) => setHeroBg(e.target.value)}
-                className="w-24 h-12 border rounded-lg cursor-pointer"
-              />
-            </div>
-          )}
-
-          {/* الإعدادات */}
           {activeTab === "settings" && (
-            <div className="bg-white/90 backdrop-blur-lg p-6 rounded-2xl shadow-md max-w-sm border">
-              <h2 className="text-lg font-bold mb-4 text-[#7b0b4c]">⚙️ الإعدادات</h2>
-              <p className="text-gray-600">إعدادات عامة للنظام هنا.</p>
-            </div>
+            <motion.div
+              key="settings"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white/90 backdrop-blur-lg p-6 rounded-2xl shadow-md max-w-sm border"
+            >
+              <h2 className="text-lg font-bold mb-4 text-[#7b0b4c]">
+                ⚙️ الإعدادات العامة
+              </h2>
+              <p className="text-gray-600">يمكنك تعديل إعدادات النظام من هنا.</p>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </main>
     </div>
   );
