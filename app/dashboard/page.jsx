@@ -16,6 +16,7 @@ export default function CoursesDashboard() {
     discount: "",
     category: "",
   });
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     fetchCourses();
@@ -27,13 +28,31 @@ export default function CoursesDashboard() {
     else setCourses(data);
   }
 
+  async function uploadImage(file) {
+    const fileName = `${Date.now()}-${file.name}`;
+    const { data, error } = await supabase.storage
+      .from("courses-images") // 🗂 اسم الباكت في Supabase
+      .upload(fileName, file);
+
+    if (error) {
+      console.error("❌ خطأ أثناء رفع الصورة:", error);
+      alert("فشل رفع الصورة!");
+      return null;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from("courses-images")
+      .getPublicUrl(fileName);
+
+    return publicUrlData.publicUrl;
+  }
+
   async function addCourse(e) {
     e.preventDefault();
 
     if (
       !newCourse.title ||
       !newCourse.description ||
-      !newCourse.image ||
       !newCourse.price ||
       !newCourse.category
     ) {
@@ -41,9 +60,17 @@ export default function CoursesDashboard() {
       return;
     }
 
+    let imageUrl = newCourse.image;
+
+    // ✅ إذا رفع المستخدم صورة من الجهاز، نرفعها فعلياً
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile);
+      if (!imageUrl) return;
+    }
+
     const { data, error } = await supabase
       .from("courses")
-      .insert([newCourse])
+      .insert([{ ...newCourse, image: imageUrl }])
       .select();
 
     if (error) {
@@ -60,6 +87,7 @@ export default function CoursesDashboard() {
         discount: "",
         category: "",
       });
+      setImageFile(null);
     }
   }
 
@@ -118,13 +146,15 @@ export default function CoursesDashboard() {
               onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
               className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
             />
+            
+            {/* 🖼 رفع الصورة من الجهاز */}
             <input
-              type="text"
-              placeholder="رابط الصورة"
-              value={newCourse.image}
-              onChange={(e) => setNewCourse({ ...newCourse, image: e.target.value })}
-              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImageFile(e.target.files[0])}
+              className="border rounded-lg px-3 py-2 text-gray-800 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-none file:bg-[#7b0b4c] file:text-white file:cursor-pointer"
             />
+
             <input
               type="text"
               placeholder="السعر"
