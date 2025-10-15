@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -23,8 +22,8 @@ function GlobalAnimations() {
 }
 
 export default function Header() {
-  const [authMode, setAuthMode] = useState(null); // "login" | "register"
-  const [user, setUser] = useState(null); // حالة المستخدم
+  const [authMode, setAuthMode] = useState(null);
+  const [user, setUser] = useState(null);
 
   const handleLogout = () => {
     setUser(null);
@@ -32,7 +31,6 @@ export default function Header() {
   };
 
   useEffect(() => {
-    // تحميل المستخدم من localStorage لو كان مسجل دخول
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
@@ -63,7 +61,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ✅ الشريط الثاني الشفاف */}
+      {/* ✅ الشريط الثاني */}
       <div className="absolute top-16 left-0 w-full bg-white/10 backdrop-blur-sm z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
           {/* المواضيع */}
@@ -105,7 +103,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* المودال */}
+      {/* مودال تسجيل الدخول */}
       {authMode && (
         <LoginModal
           mode={authMode}
@@ -150,12 +148,17 @@ function SearchButton() {
 
 /* 🛒 زر السلة */
 function CartButton() {
-  const [count] = useState(2);
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCount(savedCart.length);
+    window.addEventListener("storage", () => {
+      const updated = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCount(updated.length);
+    });
+  }, []);
   return (
-    <button
-      className="relative p-2 rounded-full hover:bg-gray-100"
-      aria-label="السلة"
-    >
+    <button className="relative p-2 rounded-full hover:bg-gray-100" aria-label="السلة">
       <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
         <path
           fill="currentColor"
@@ -173,41 +176,62 @@ function CartButton() {
 
 /* 🌍 زر اللغة والعملة */
 function LangCurrency() {
-  const [currency, setCurrency] = useState("دولار");
+  const [currency, setCurrency] = useState("USD");
   const [lang, setLang] = useState("AR");
+
+  const currencies = {
+    USD: { label: "دولار", flag: "🇺🇸" },
+    QAR: { label: "ريال قطري", flag: "🇶🇦" },
+  };
+
+  const languages = {
+    AR: { label: "العربية", flag: "🇸🇦" },
+    EN: { label: "English", flag: "🇬🇧" },
+  };
+
+  useEffect(() => {
+    document.documentElement.lang = lang === "EN" ? "en" : "ar";
+    localStorage.setItem("lang", lang);
+    localStorage.setItem("currency", currency);
+  }, [lang, currency]);
 
   return (
     <div className="hidden sm:flex items-center gap-3 text-sm">
+      {/* العملة */}
       <div className="relative group">
-        <button className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-          <span className="text-xs text-[#7b0b4c]">$</span>
-          <span>{currency}</span>
+        <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
+          <span>{currencies[currency].flag}</span>
+          <span>{currencies[currency].label}</span>
         </button>
         <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
-          {["دولار", "يورو", "جنيه"].map((c) => (
+          {Object.entries(currencies).map(([key, val]) => (
             <button
-              key={c}
-              onClick={() => setCurrency(c)}
-              className="block px-4 py-2 hover:bg-gray-100 w-full text-right"
+              key={key}
+              onClick={() => setCurrency(key)}
+              className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
             >
-              {c}
+              <span>{val.flag}</span>
+              {val.label}
             </button>
           ))}
         </div>
       </div>
 
+      {/* اللغة */}
       <div className="relative group">
-        <button className="px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-          {lang}
+        <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
+          <span>{languages[lang].flag}</span>
+          <span>{languages[lang].label}</span>
         </button>
         <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
-          {["AR", "EN"].map((l) => (
+          {Object.entries(languages).map(([key, val]) => (
             <button
-              key={l}
-              onClick={() => setLang(l)}
-              className="block px-4 py-2 hover:bg-gray-100 w-full text-right"
+              key={key}
+              onClick={() => setLang(key)}
+              className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
             >
-              {l}
+              <span>{val.flag}</span>
+              {val.label}
             </button>
           ))}
         </div>
@@ -216,11 +240,9 @@ function LangCurrency() {
   );
 }
 
-/* 🔑 تسجيل الدخول/التسجيل Modal */
+/* 🔑 مودال تسجيل الدخول */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
-  const [tab, setTab] = useState("email");
   const router = useRouter();
-
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", handleEsc);
@@ -229,46 +251,18 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const users = [
-      {
-        name: "المدير العام",
-        email: "admin@misbah.com",
-        password: "123456",
-        role: "general_manager",
-      },
-      {
-        name: "المدير التنفيذي",
-        email: "executive@misbah.com",
-        password: "123456",
-        role: "executive",
-      },
-      {
-        name: "مدير الموارد البشرية",
-        email: "atag4052@gmail.com",
-        password: "123456",
-        role: "hr",
-      },
+      { name: "المدير العام", email: "admin@misbah.com", password: "123456", role: "general_manager" },
+      { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456", role: "executive" },
+      { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456", role: "hr" },
     ];
-
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
-
-    const foundUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
+    const foundUser = users.find((u) => u.email === email && u.password === password);
 
     if (foundUser) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: foundUser.name,
-          email: foundUser.email,
-          role: foundUser.role,
-        })
-      );
-
+      localStorage.setItem("user", JSON.stringify(foundUser));
       setUser(foundUser);
       onClose();
       router.push("/dashboard");
@@ -292,7 +286,6 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
         >
           ✕
         </button>
-
         <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
           {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
         </h2>
@@ -308,7 +301,6 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
               placeholder="example@mail.com"
             />
           </div>
-
           <div>
             <label className="block text-sm mb-1">كلمة المرور</label>
             <input

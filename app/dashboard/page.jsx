@@ -1,266 +1,205 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { PlusCircle, Layers, Settings, LogOut, Trash2, Edit3, Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../lib/supabaseClient";
 
-export default function Dashboard() {
+export default function CoursesDashboard() {
+  const router = useRouter();
+
   const [courses, setCourses] = useState([]);
-  const [form, setForm] = useState({ title: "", price: "", desc: "" });
-  const [editCourse, setEditCourse] = useState(null);
-  const [activeTab, setActiveTab] = useState("courses");
+  const [newCourse, setNewCourse] = useState({
+    title: "",
+    description: "",
+    image: "",
+    price: "",
+    discount: "",
+    category: "",
+  });
 
-  // تحميل البيانات من localStorage عند فتح الصفحة
   useEffect(() => {
-    const saved = localStorage.getItem("courses");
-    if (saved) setCourses(JSON.parse(saved));
+    fetchCourses();
   }, []);
 
-  // حفظ تلقائي عند أي تغيير
-  useEffect(() => {
-    localStorage.setItem("courses", JSON.stringify(courses));
-  }, [courses]);
+  async function fetchCourses() {
+    const { data, error } = await supabase.from("courses").select("*");
+    if (error) console.error("❌ خطأ في جلب الدورات:", error);
+    else setCourses(data);
+  }
 
-  // إضافة كورس جديد
-  const addCourse = (e) => {
+  async function addCourse(e) {
     e.preventDefault();
-    if (!form.title.trim()) return;
-    const newCourse = { ...form, id: Date.now() };
-    setCourses([newCourse, ...courses]);
-    setForm({ title: "", price: "", desc: "" });
-  };
 
-  // حذف كورس
-  const deleteCourse = (id) => {
-    setCourses(courses.filter((c) => c.id !== id));
-  };
+    if (
+      !newCourse.title ||
+      !newCourse.description ||
+      !newCourse.image ||
+      !newCourse.price ||
+      !newCourse.category
+    ) {
+      alert("⚠️ الرجاء إدخال جميع البيانات المطلوبة");
+      return;
+    }
 
-  // بدء تعديل كورس
-  const startEdit = (course) => {
-    setEditCourse(course.id);
-    setForm({ title: course.title, price: course.price, desc: course.desc });
-  };
+    const { data, error } = await supabase
+      .from("courses")
+      .insert([newCourse])
+      .select();
 
-  // حفظ التعديلات
-  const saveEdit = (id) => {
-    setCourses(
-      courses.map((c) =>
-        c.id === id ? { ...c, title: form.title, price: form.price, desc: form.desc } : c
-      )
-    );
-    setEditCourse(null);
-    setForm({ title: "", price: "", desc: "" });
-  };
+    if (error) {
+      console.error("❌ خطأ أثناء الإضافة:", error);
+      alert(`حدث خطأ أثناء الإضافة:\n${error.message}`);
+    } else {
+      alert("✅ تمت إضافة الدورة بنجاح!");
+      setCourses([...courses, data[0]]);
+      setNewCourse({
+        title: "",
+        description: "",
+        image: "",
+        price: "",
+        discount: "",
+        category: "",
+      });
+    }
+  }
 
-  // إلغاء التعديل
-  const cancelEdit = () => {
-    setEditCourse(null);
-    setForm({ title: "", price: "", desc: "" });
-  };
-
-  const tabs = [
-    { id: "courses", label: "الكورسات", icon: Layers },
-    { id: "settings", label: "الإعدادات", icon: Settings },
-  ];
+  async function deleteCourse(id) {
+    const { error } = await supabase.from("courses").delete().eq("id", id);
+    if (error) {
+      alert(`❌ فشل حذف الدورة:\n${error.message}`);
+      console.error(error);
+    } else {
+      setCourses(courses.filter((c) => c.id !== id));
+    }
+  }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-[#f7f1f5] to-[#fdfdfd] text-gray-800 font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#7b0b4c] text-white p-6 flex flex-col justify-between shadow-2xl">
-        <div>
-          <h2 className="text-3xl font-extrabold mb-10 text-center tracking-wide">
-            لوحة التحكم
-          </h2>
-          <nav className="space-y-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-start gap-3 w-full text-right p-3 rounded-lg transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? "bg-white/20 shadow-md"
-                    : "hover:bg-white/10"
-                }`}
-              >
-                <tab.icon size={18} /> {tab.label}
-              </button>
-            ))}
-          </nav>
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed flex flex-col items-center p-8 text-right"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1400&q=80')",
+      }}
+    >
+      <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 w-full max-w-5xl animate-fade-in">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-[#7b0b4c]">🎓 إدارة الدورات</h1>
+            <p className="text-gray-700 mt-1 text-sm font-medium">
+              مرحباً 👋 مدير الموارد البشرية
+            </p>
+          </div>
+
+          <button
+            onClick={() => router.push("/")}
+            className="px-4 py-2 bg-[#7b0b4c] text-white rounded-lg hover:bg-[#5e0839] transition"
+          >
+            ← الرجوع للصفحة الرئيسية
+          </button>
         </div>
 
-        <button className="flex items-center justify-center gap-2 mt-10 bg-white/20 hover:bg-white/30 transition rounded-lg py-2 text-sm font-semibold">
-          <LogOut size={16} /> تسجيل الخروج
-        </button>
-      </aside>
+        {/* ✅ نموذج إضافة دورة */}
+        <form onSubmit={addCourse} className="bg-gray-50 rounded-xl p-4 mb-8 shadow-inner">
+          <h2 className="text-lg font-semibold mb-4 text-[#7b0b4c]">
+            ➕ إضافة دورة جديدة
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="عنوان الدورة"
+              value={newCourse.title}
+              onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
+              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+            />
+            <input
+              type="text"
+              placeholder="الوصف"
+              value={newCourse.description}
+              onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
+              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+            />
+            <input
+              type="text"
+              placeholder="رابط الصورة"
+              value={newCourse.image}
+              onChange={(e) => setNewCourse({ ...newCourse, image: e.target.value })}
+              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+            />
+            <input
+              type="text"
+              placeholder="السعر"
+              value={newCourse.price}
+              onChange={(e) => setNewCourse({ ...newCourse, price: e.target.value })}
+              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+            />
+            <input
+              type="text"
+              placeholder="الخصم (اختياري)"
+              value={newCourse.discount}
+              onChange={(e) => setNewCourse({ ...newCourse, discount: e.target.value })}
+              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+            />
+            <input
+              type="text"
+              placeholder="الفئة (مثلاً: القانون / اللغة / التقنية)"
+              value={newCourse.category}
+              onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
+              className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
+            />
+          </div>
 
-      {/* Main */}
-      <main className="flex-1 p-10 overflow-y-auto relative">
-        <motion.section
-          layout
-          className="h-56 rounded-2xl shadow-lg mb-12 relative overflow-hidden bg-[#7b0b4c]"
-        >
-          <div className="absolute inset-0 bg-black/40" />
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative z-10 flex items-center justify-center h-full"
+          <button
+            type="submit"
+            className="mt-4 bg-[#7b0b4c] text-white px-6 py-2 rounded-lg hover:bg-[#5e0839] transition"
           >
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg text-center">
-              إدارة الكورسات
-            </h1>
-          </motion.div>
-        </motion.section>
+            إضافة الدورة
+          </button>
+        </form>
 
-        {/* Tabs */}
-        <AnimatePresence mode="wait">
-          {activeTab === "courses" && (
-            <motion.div
-              key="courses"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-            >
-              {/* نموذج الإضافة */}
-              {!editCourse && (
-                <form
-                  onSubmit={addCourse}
-                  className="space-y-4 bg-white/90 backdrop-blur-xl p-6 rounded-2xl shadow-lg max-w-md border border-gray-100"
+        {/* ✅ قائمة الدورات */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4 text-[#7b0b4c]">📚 الدورات الحالية</h2>
+          {courses.length === 0 ? (
+            <p className="text-gray-500">لا توجد دورات حالياً.</p>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {courses.map((course) => (
+                <div
+                  key={course.id}
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
                 >
-                  <input
-                    type="text"
-                    placeholder="اسم الكورس"
-                    value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition"
+                  <img
+                    src={course.image || "https://via.placeholder.com/300x150"}
+                    alt={course.title}
+                    className="w-full h-40 object-cover"
                   />
-                  <input
-                    type="text"
-                    placeholder="السعر"
-                    value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition"
-                  />
-                  <textarea
-                    placeholder="الوصف"
-                    value={form.desc}
-                    onChange={(e) => setForm({ ...form, desc: e.target.value })}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#7b0b4c] outline-none transition"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#7b0b4c] to-[#5e0839] text-white py-2 rounded-lg hover:opacity-90 transition font-semibold shadow"
-                  >
-                    <PlusCircle size={18} /> إضافة كورس
-                  </button>
-                </form>
-              )}
-
-              {/* الكورسات */}
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <AnimatePresence>
-                  {courses.map((c) => (
-                    <motion.div
-                      key={c.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -30 }}
-                      layout
-                      whileHover={{ y: -5 }}
-                      className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition relative"
+                  <div className="p-4">
+                    <h3 className="text-gray-900 font-bold mb-1">{course.title}</h3>
+                    <p className="text-gray-700 text-sm mb-2">{course.description}</p>
+                    <p className="text-[#5e0839] font-semibold mb-1">
+                      السعر: {course.price}
+                    </p>
+                    {course.discount && (
+                      <p className="text-green-700 text-sm">
+                        الخصم: {course.discount}
+                      </p>
+                    )}
+                    <p className="text-gray-600 text-sm mb-2">
+                      الفئة: {course.category}
+                    </p>
+                    <button
+                      onClick={() => deleteCourse(course.id)}
+                      className="mt-3 px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                     >
-                      {editCourse === c.id ? (
-                        <>
-                          <input
-                            type="text"
-                            value={form.title}
-                            onChange={(e) =>
-                              setForm({ ...form, title: e.target.value })
-                            }
-                            className="w-full border px-3 py-2 mb-2 rounded"
-                          />
-                          <input
-                            type="text"
-                            value={form.price}
-                            onChange={(e) =>
-                              setForm({ ...form, price: e.target.value })
-                            }
-                            className="w-full border px-3 py-2 mb-2 rounded"
-                          />
-                          <textarea
-                            value={form.desc}
-                            onChange={(e) =>
-                              setForm({ ...form, desc: e.target.value })
-                            }
-                            className="w-full border px-3 py-2 mb-2 rounded"
-                          />
-                          <div className="flex justify-end gap-3">
-                            <button
-                              onClick={() => saveEdit(c.id)}
-                              className="text-green-600 hover:text-green-800"
-                            >
-                              <Check size={20} />
-                            </button>
-                            <button
-                              onClick={cancelEdit}
-                              className="text-gray-400 hover:text-gray-600"
-                            >
-                              <X size={20} />
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => deleteCourse(c.id)}
-                            className="absolute top-3 left-3 text-gray-400 hover:text-red-500 transition"
-                            title="حذف الكورس"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                          <button
-                            onClick={() => startEdit(c)}
-                            className="absolute top-3 right-3 text-gray-400 hover:text-blue-500 transition"
-                            title="تعديل الكورس"
-                          >
-                            <Edit3 size={18} />
-                          </button>
-                          <h3 className="font-bold text-xl text-[#7b0b4c]">
-                            {c.title}
-                          </h3>
-                          <p className="text-gray-600 mt-2 line-clamp-3">
-                            {c.desc}
-                          </p>
-                          <p className="mt-4 font-semibold text-lg text-gray-800">
-                            {c.price} $
-                          </p>
-                        </>
-                      )}
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </motion.div>
+                      حذف
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-
-          {activeTab === "settings" && (
-            <motion.div
-              key="settings"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-              className="bg-white/90 backdrop-blur-lg p-6 rounded-2xl shadow-md max-w-sm border"
-            >
-              <h2 className="text-lg font-bold mb-4 text-[#7b0b4c]">
-                ⚙️ الإعدادات العامة
-              </h2>
-              <p className="text-gray-600">يمكنك تعديل إعدادات النظام من هنا.</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }
