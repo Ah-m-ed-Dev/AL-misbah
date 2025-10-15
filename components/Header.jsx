@@ -1,9 +1,12 @@
 "use client";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-/* أنيميشن عامة */
+/* =======================
+   Global animations (inject CSS once)
+   ======================= */
 function GlobalAnimations() {
   useEffect(() => {
     const id = "header-anim-css";
@@ -21,25 +24,32 @@ function GlobalAnimations() {
   return null;
 }
 
+/* =======================
+   Header (export default)
+   - يحتوي: شعار، بحث، سلة، اختيار لغة/عملة، أزرار تسجيل
+   - لا نحذف أي خاصية قد أعطيتها
+   ======================= */
 export default function Header() {
-  const [authMode, setAuthMode] = useState(null);
-  const [user, setUser] = useState(null);
-
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
+  const [authMode, setAuthMode] = useState(null); // "login" | "register"
+  const [user, setUser] = useState(null); // حالة المستخدم (من localStorage)
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    // لو حابب تعيد توجيه: useRouter().push("/")
+  };
+
   return (
     <header className="sticky top-0 z-40">
       <GlobalAnimations />
 
-      {/* ✅ الشريط الأبيض الأساسي */}
+      {/* الشريط الأبيض الأساسي */}
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* الشعار */}
@@ -61,7 +71,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ✅ الشريط الثاني */}
+      {/* الشريط الثاني الشفاف */}
       <div className="absolute top-16 left-0 w-full bg-white/10 backdrop-blur-sm z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
           {/* المواضيع */}
@@ -116,7 +126,9 @@ export default function Header() {
   );
 }
 
-/* 🔎 زر البحث */
+/* =======================
+   SearchButton
+   ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
   return (
@@ -146,38 +158,138 @@ function SearchButton() {
   );
 }
 
-/* 🛒 زر السلة */
+/* =======================
+   CartButton
+   - يقرأ السلة من localStorage ("cart")
+   - يستمع لـ storage وحدث مخصص "cartUpdated"
+   - يعرض نافذة تحتوي عناصر السلة (يمكن حذف/طلب واتساب)
+   ======================= */
 function CartButton() {
-  const [count, setCount] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [cart, setCart] = useState([]);
+
+  // تحميل السلة ومراقبتها
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCount(savedCart.length);
-    window.addEventListener("storage", () => {
-      const updated = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCount(updated.length);
-    });
+    const loadCart = () => {
+      const stored = localStorage.getItem("cart");
+      setCart(stored ? JSON.parse(stored) : []);
+    };
+
+    loadCart();
+    // استمع لتغيرات التخزين من نافذة أخرى
+    window.addEventListener("storage", loadCart);
+    // حدث مخصص يرسله مكان إضافة للسلة حتى هذه المكونة يحدث فوراً
+    window.addEventListener("cartUpdated", loadCart);
+
+    return () => {
+      window.removeEventListener("storage", loadCart);
+      window.removeEventListener("cartUpdated", loadCart);
+    };
   }, []);
+
+  // إجمالي الأعداد أو المبلغ
+  const totalCount = cart.length;
+  const totalPrice = cart.reduce(
+    (sum, c) => sum + (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0),
+    0
+  );
+
+  const handleRemove = (id) => {
+    const updated = cart.filter((c) => c.id !== id);
+    setCart(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+    // حدث مخصص لإخطار مكونات أخرى
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  const handleWhatsAppOrder = () => {
+    if (cart.length === 0) return alert("السلة فارغة!");
+    const message =
+      "مرحباً! أود طلب الدورات التالية:\n\n" +
+      cart.map((c, i) => `${i + 1}- ${c.title} (${c.price || "0"})`).join("\n") +
+      `\n\nالإجمالي: ${totalPrice}`;
+    const url = "https://wa.me/+97472041794?text=" + encodeURIComponent(message);
+    window.open(url, "_blank");
+  };
+
   return (
-    <button className="relative p-2 rounded-full hover:bg-gray-100" aria-label="السلة">
-      <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
-        <path
-          fill="currentColor"
-          d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45A1 1 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.21-.37l.93-1.63h7.45a1 1 0 0 0 .9-.55l3.58-6.49A.5.5 0 0 0 21.58 6H6.21l-.94-2zM7 20a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 20z"
-        />
-      </svg>
-      {count > 0 && (
-        <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
-          {count}
-        </span>
+    <div className="relative">
+      <button
+        className="relative p-2 rounded-full hover:bg-gray-100"
+        aria-label="السلة"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
+          <path
+            fill="currentColor"
+            d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45A1 1 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.21-.37l.93-1.63h7.45a1 1 0 0 0 .9-.55l3.58-6.49A.5.5 0 0 0 21.58 6H6.21l-.94-2zM7 20a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 20z"
+          />
+        </svg>
+
+        {totalCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
+            {totalCount}
+          </span>
+        )}
+      </button>
+
+      {/* نافذة السلة المصغرة (dropdown/modal) */}
+      {open && (
+        <div className="absolute right-0 mt-3 w-80 bg-white border rounded-lg shadow-lg p-4 animate-scale-in text-right z-50">
+          <h3 className="font-bold text-[#7b0b4c] mb-2">السلة</h3>
+
+          {cart.length === 0 ? (
+            <p className="text-sm text-gray-500">السلة فارغة حالياً.</p>
+          ) : (
+            <>
+              <ul className="space-y-2 mb-3 max-h-48 overflow-y-auto">
+                {cart.map((c) => (
+                  <li key={c.id} className="flex items-center justify-between border-b pb-1 text-sm">
+                    <div>
+                      <div className="font-medium">{c.title}</div>
+                      {c.category && <div className="text-xs text-gray-500">{c.category}</div>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#7b0b4c] font-semibold">{c.price || "0"}</span>
+                      <button onClick={() => handleRemove(c.id)} className="text-gray-400 hover:text-red-500 text-xs">✕</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex justify-between text-sm font-medium mb-2">
+                <span>الإجمالي:</span>
+                <span className="text-[#7b0b4c]">{totalPrice}</span>
+              </div>
+
+              <button onClick={handleWhatsAppOrder} className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]">
+                طلب عبر واتساب
+              </button>
+            </>
+          )}
+        </div>
       )}
-    </button>
+    </div>
   );
 }
 
-/* 🌍 زر اللغة والعملة */
+/* =======================
+   LangCurrency
+   - تعدل direction & lang و تخزن الاختيارات في localStorage
+   ======================= */
 function LangCurrency() {
-  const [currency, setCurrency] = useState("USD");
-  const [lang, setLang] = useState("AR");
+  const [currency, setCurrency] = useState(() => localStorage.getItem("currency") || "USD");
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "AR");
+
+  useEffect(() => {
+    // direction + lang attribute
+    document.documentElement.dir = lang === "EN" ? "ltr" : "rtl";
+    document.documentElement.lang = lang === "EN" ? "en" : "ar";
+    localStorage.setItem("lang", lang);
+    localStorage.setItem("currency", currency);
+    // حدث مخصص إذا حبيت تحديث أسعار في المكونات الأخرى لاحقاً
+    window.dispatchEvent(new Event("localeChanged"));
+  }, [lang, currency]);
 
   const currencies = {
     USD: { label: "دولار", flag: "🇺🇸" },
@@ -188,12 +300,6 @@ function LangCurrency() {
     AR: { label: "العربية", flag: "🇸🇦" },
     EN: { label: "English", flag: "🇬🇧" },
   };
-
-  useEffect(() => {
-    document.documentElement.lang = lang === "EN" ? "en" : "ar";
-    localStorage.setItem("lang", lang);
-    localStorage.setItem("currency", currency);
-  }, [lang, currency]);
 
   return (
     <div className="hidden sm:flex items-center gap-3 text-sm">
@@ -240,9 +346,12 @@ function LangCurrency() {
   );
 }
 
-/* 🔑 مودال تسجيل الدخول */
+/* =======================
+   LoginModal (كما في كودك، بدون حذف)
+   ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
   const router = useRouter();
+
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", handleEsc);
@@ -251,14 +360,17 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const users = [
       { name: "المدير العام", email: "admin@misbah.com", password: "123456", role: "general_manager" },
       { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456", role: "executive" },
       { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456", role: "hr" },
     ];
+
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
+
     const foundUser = users.find((u) => u.email === email && u.password === password);
 
     if (foundUser) {
@@ -272,20 +384,10 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 left-3 text-gray-500 hover:text-gray-700"
-        >
-          ✕
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-3 left-3 text-gray-500 hover:text-gray-700">✕</button>
+
         <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
           {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
         </h2>
@@ -293,28 +395,14 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm mb-1">البريد الإلكتروني</label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-              placeholder="example@mail.com"
-            />
+            <input type="email" name="email" required className="w-full px-3 py-2 border rounded-lg" placeholder="example@mail.com" />
           </div>
           <div>
             <label className="block text-sm mb-1">كلمة المرور</label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
+            <input type="password" name="password" required className="w-full px-3 py-2 border rounded-lg" />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]"
-          >
+          <button type="submit" className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]">
             {mode === "login" ? "دخول" : "إنشاء حساب"}
           </button>
         </form>
@@ -323,18 +411,11 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
           <div className="mt-6 text-sm text-center space-y-2">
             <p>
               أليس لديك حساب؟{" "}
-              <button
-                onClick={() => setAuthMode("register")}
-                className="text-[#7b0b4c] font-bold"
-              >
-                أنشئ حسابًا!
-              </button>
+              <button onClick={() => setAuthMode("register")} className="text-[#7b0b4c] font-bold">أنشئ حسابًا!</button>
             </p>
             <p>
               نسيت كلمة السر؟{" "}
-              <Link href="/forgot" className="text-[#7b0b4c] font-bold">
-                إضغط هنا!
-              </Link>
+              <Link href="/forgot" className="text-[#7b0b4c] font-bold">إضغط هنا!</Link>
             </p>
           </div>
         )}
