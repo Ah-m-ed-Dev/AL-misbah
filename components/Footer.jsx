@@ -30,7 +30,7 @@ export default function Footer() {
 
   const centerLinks = [
     { label: "معلومات عنا", href: "/about" },
-    { label: "عن المركز", href: "/center" },
+   
     { label: "تواصل معنا", href: "/contact" },
   ];
 
