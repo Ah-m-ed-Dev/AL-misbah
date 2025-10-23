@@ -28,10 +28,11 @@ export default function CoursesDashboard() {
     else setCourses(data);
   }
 
+  // ✅ رفع صورة الدورة في bucket الصحيح
   async function uploadImage(file) {
     const fileName = `${Date.now()}-${file.name}`;
     const { data, error } = await supabase.storage
-      .from("courses-images") // 🗂 اسم الباكت في Supabase
+      .from("courses-images")
       .upload(fileName, file);
 
     if (error) {
@@ -41,7 +42,7 @@ export default function CoursesDashboard() {
     }
 
     const { data: publicUrlData } = supabase.storage
-      .from("courses-images")
+      .from("courses-images") // ✅ نفس الباكت
       .getPublicUrl(fileName);
 
     return publicUrlData.publicUrl;
@@ -62,7 +63,6 @@ export default function CoursesDashboard() {
 
     let imageUrl = newCourse.image;
 
-    // ✅ إذا رفع المستخدم صورة من الجهاز، نرفعها فعلياً
     if (imageFile) {
       imageUrl = await uploadImage(imageFile);
       if (!imageUrl) return;
@@ -143,11 +143,12 @@ export default function CoursesDashboard() {
               type="text"
               placeholder="الوصف"
               value={newCourse.description}
-              onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
+              onChange={(e) =>
+                setNewCourse({ ...newCourse, description: e.target.value })
+              }
               className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
             />
-            
-            {/* 🖼 رفع الصورة من الجهاز */}
+
             <input
               type="file"
               accept="image/*"
@@ -166,14 +167,18 @@ export default function CoursesDashboard() {
               type="text"
               placeholder="الخصم (اختياري)"
               value={newCourse.discount}
-              onChange={(e) => setNewCourse({ ...newCourse, discount: e.target.value })}
+              onChange={(e) =>
+                setNewCourse({ ...newCourse, discount: e.target.value })
+              }
               className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
             />
             <input
               type="text"
               placeholder="الفئة (مثلاً: القانون / اللغة / التقنية)"
               value={newCourse.category}
-              onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
+              onChange={(e) =>
+                setNewCourse({ ...newCourse, category: e.target.value })
+              }
               className="border rounded-lg px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-[#7b0b4c] outline-none"
             />
           </div>
@@ -229,6 +234,129 @@ export default function CoursesDashboard() {
             </div>
           )}
         </div>
+
+        {/* 🖼️ إدارة الحملات الإعلانية */}
+        <div className="mt-12 border-t pt-8">
+          <h2 className="text-xl font-semibold mb-4 text-[#7b0b4c]">
+            🖼️ إدارة الحملات الإعلانية
+          </h2>
+          <CampaignsManager />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 👇 الكومبوننت الخاص بالحملات */
+function CampaignsManager() {
+  const [campaigns, setCampaigns] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  async function fetchCampaigns() {
+    const { data, error } = await supabase
+      .from("campaigns")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) console.error("❌ خطأ في جلب الحملات:", error);
+    else setCampaigns(data || []);
+  }
+
+  async function uploadImage(file) {
+    const fileName = `${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage
+      .from("campaigns-images")
+      .upload(fileName, file);
+
+    if (error) {
+      console.error("❌ خطأ أثناء رفع صورة الحملة:", error);
+      alert("فشل رفع الصورة!");
+      return null;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from("campaigns-images")
+      .getPublicUrl(fileName);
+
+    return publicUrlData.publicUrl;
+  }
+
+  async function addCampaignImage(e) {
+    e.preventDefault();
+    if (!imageFile) {
+      alert("⚠️ الرجاء اختيار صورة أولاً");
+      return;
+    }
+
+    setUploading(true);
+    const imageUrl = await uploadImage(imageFile);
+    setUploading(false);
+
+    if (!imageUrl) return;
+
+    const { data, error } = await supabase
+      .from("campaigns")
+      .insert([{ image: imageUrl }])
+      .select();
+
+    if (error) {
+      alert("❌ حدث خطأ أثناء إضافة الصورة!");
+      console.error(error);
+    } else {
+      alert("✅ تمت إضافة الصورة بنجاح!");
+      setCampaigns([data[0], ...campaigns]);
+      setImageFile(null);
+    }
+  }
+
+  async function deleteCampaign(id) {
+    const { error } = await supabase.from("campaigns").delete().eq("id", id);
+    if (error) {
+      alert("❌ فشل حذف الصورة!");
+      console.error(error);
+    } else {
+      setCampaigns(campaigns.filter((c) => c.id !== id));
+    }
+  }
+
+  return (
+    <div className="bg-gray-50 rounded-xl p-4 shadow-inner">
+      <form onSubmit={addCampaignImage} className="flex flex-col sm:flex-row gap-4 items-center">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImageFile(e.target.files[0])}
+          className="border rounded-lg px-3 py-2 text-gray-800 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-none file:bg-[#7b0b4c] file:text-white file:cursor-pointer"
+        />
+        <button
+          type="submit"
+          disabled={uploading}
+          className="bg-[#7b0b4c] text-white px-6 py-2 rounded-lg hover:bg-[#5e0839] transition"
+        >
+          {uploading ? "جاري الرفع..." : "رفع الصورة"}
+        </button>
+      </form>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {campaigns.map((c) => (
+          <div key={c.id} className="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition">
+            <img src={c.image} alt="campaign" className="w-full h-48 object-cover" />
+            <div className="p-3 flex justify-between items-center">
+              <span className="text-gray-600 text-sm">حملة #{c.id}</span>
+              <button
+                onClick={() => deleteCampaign(c.id)}
+                className="text-red-600 hover:text-red-800 text-sm font-semibold"
+              >
+                حذف
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

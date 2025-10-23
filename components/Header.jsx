@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /* =======================
-   Global animations (inject CSS once)
-   ======================= */
+   GlobalAnimations
+======================= */
 function GlobalAnimations() {
   useEffect(() => {
     const id = "header-anim-css";
@@ -25,14 +25,11 @@ function GlobalAnimations() {
 }
 
 /* =======================
-   Header (export default)
-   - يحتوي: شعار، بحث، سلة، اختيار لغة/عملة، أزرار تسجيل
-   - لا نحذف أي خاصية قد أعطيتها
-   ======================= */
+   Header
+======================= */
 export default function Header() {
-  const [authMode, setAuthMode] = useState(null); // "login" | "register"
-  const [user, setUser] = useState(null); // حالة المستخدم (من localStorage)
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [authMode, setAuthMode] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -42,27 +39,19 @@ export default function Header() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    // لو حابب تعيد توجيه: useRouter().push("/")
   };
 
   return (
     <header className="sticky top-0 z-40">
       <GlobalAnimations />
-
-      {/* الشريط الأبيض الأساسي */}
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* الشعار */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-[#7b0b4c]">
               <path d="M12 2l9 5-9 5-9-5 9-5Zm0 7l9 5-9 5-9-5 9-5Z" />
             </svg>
-            <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
-              مركز المصباح
-            </span>
+            <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">مركز المصباح</span>
           </Link>
-
-          {/* البحث + السلة + اللغة والعملة */}
           <div className="flex items-center gap-4">
             <SearchButton />
             <CartButton />
@@ -71,15 +60,12 @@ export default function Header() {
         </div>
       </div>
 
-      {/* الشريط الثاني الشفاف */}
       <div className="absolute top-16 left-0 w-full bg-white/10 backdrop-blur-sm z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
-          {/* المواضيع */}
           <button className="flex items-center gap-2 text-gray-800 hover:text-[#7b0b4c]">
             <span className="text-sm">المواضيع</span>
           </button>
 
-          {/* تسجيل الدخول / المستخدم */}
           <div className="flex items-center gap-3">
             {!user ? (
               <>
@@ -98,9 +84,7 @@ export default function Header() {
               </>
             ) : (
               <div className="flex items-center gap-3">
-                <span className="text-sm font-bold text-[#7b0b4c]">
-                  مرحباً، {user.name}
-                </span>
+                <span className="text-sm font-bold text-[#7b0b4c]">مرحباً، {user.name}</span>
                 <button
                   onClick={handleLogout}
                   className="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm"
@@ -113,45 +97,26 @@ export default function Header() {
         </div>
       </div>
 
-      {/* مودال تسجيل الدخول */}
-      {authMode && (
-        <LoginModal
-          mode={authMode}
-          onClose={() => setAuthMode(null)}
-          setAuthMode={setAuthMode}
-          setUser={setUser}
-        />
-      )}
+      {authMode && <LoginModal mode={authMode} onClose={() => setAuthMode(null)} setAuthMode={setAuthMode} setUser={setUser} />}
     </header>
   );
 }
 
 /* =======================
    SearchButton
-   ======================= */
+======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button
-        className="p-2 rounded-full hover:bg-gray-100"
-        aria-label="بحث"
-        onClick={() => setOpen((v) => !v)}
-      >
+      <button className="p-2 rounded-full hover:bg-gray-100" aria-label="بحث" onClick={() => setOpen((v) => !v)}>
         <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
-          <path
-            fill="currentColor"
-            d="M10 2a8 8 0 1 1 5.293 13.707l4 4-1.414 1.414-4-4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"
-          />
+          <path fill="currentColor" d="M10 2a8 8 0 1 1 5.293 13.707l4 4-1.414 1.414-4-4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
         </svg>
       </button>
       {open && (
         <div className="absolute top-12 right-0 bg-white border rounded-lg shadow p-3 animate-fade-in">
-          <input
-            type="text"
-            placeholder="ابحث هنا..."
-            className="w-64 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
-          />
+          <input type="text" placeholder="ابحث هنا..." className="w-64 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]" />
         </div>
       )}
     </div>
@@ -160,84 +125,51 @@ function SearchButton() {
 
 /* =======================
    CartButton
-   - يقرأ السلة من localStorage ("cart")
-   - يستمع لـ storage وحدث مخصص "cartUpdated"
-   - يعرض نافذة تحتوي عناصر السلة (يمكن حذف/طلب واتساب)
-   ======================= */
+======================= */
 function CartButton() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
 
-  // تحميل السلة ومراقبتها
   useEffect(() => {
-    const loadCart = () => {
-      const stored = localStorage.getItem("cart");
-      setCart(stored ? JSON.parse(stored) : []);
-    };
-
+    const loadCart = () => setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
     loadCart();
-    // استمع لتغيرات التخزين من نافذة أخرى
     window.addEventListener("storage", loadCart);
-    // حدث مخصص يرسله مكان إضافة للسلة حتى هذه المكونة يحدث فوراً
     window.addEventListener("cartUpdated", loadCart);
-
     return () => {
       window.removeEventListener("storage", loadCart);
       window.removeEventListener("cartUpdated", loadCart);
     };
   }, []);
 
-  // إجمالي الأعداد أو المبلغ
   const totalCount = cart.length;
-  const totalPrice = cart.reduce(
-    (sum, c) => sum + (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0),
-    0
-  );
-
+  const totalPrice = cart.reduce((sum, c) => sum + (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0), 0);
   const handleRemove = (id) => {
     const updated = cart.filter((c) => c.id !== id);
     setCart(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
-    // حدث مخصص لإخطار مكونات أخرى
     window.dispatchEvent(new Event("cartUpdated"));
   };
-
   const handleWhatsAppOrder = () => {
-    if (cart.length === 0) return alert("السلة فارغة!");
+    if (!cart.length) return alert("السلة فارغة!");
     const message =
       "مرحباً! أود طلب الدورات التالية:\n\n" +
       cart.map((c, i) => `${i + 1}- ${c.title} (${c.price || "0"})`).join("\n") +
       `\n\nالإجمالي: ${totalPrice}`;
-    const url = "https://wa.me/+97472041794?text=" + encodeURIComponent(message);
-    window.open(url, "_blank");
+    window.open("https://wa.me/+97472041794?text=" + encodeURIComponent(message), "_blank");
   };
 
   return (
     <div className="relative">
-      <button
-        className="relative p-2 rounded-full hover:bg-gray-100"
-        aria-label="السلة"
-        onClick={() => setOpen((v) => !v)}
-      >
+      <button className="relative p-2 rounded-full hover:bg-gray-100" aria-label="السلة" onClick={() => setOpen((v) => !v)}>
         <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
-          <path
-            fill="currentColor"
-            d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45A1 1 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.21-.37l.93-1.63h7.45a1 1 0 0 0 .9-.55l3.58-6.49A.5.5 0 0 0 21.58 6H6.21l-.94-2zM7 20a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 20z"
-          />
+          <path fill="currentColor" d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45A1 1 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.21-.37l.93-1.63h7.45a1 1 0 0 0 .9-.55l3.58-6.49A.5.5 0 0 0 21.58 6H6.21l-.94-2zM7 20a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 20z" />
         </svg>
-
-        {totalCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
-            {totalCount}
-          </span>
-        )}
+        {totalCount > 0 && <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">{totalCount}</span>}
       </button>
 
-      {/* نافذة السلة المصغرة (dropdown/modal) */}
       {open && (
         <div className="absolute right-0 mt-3 w-80 bg-white border rounded-lg shadow-lg p-4 animate-scale-in text-right z-50">
           <h3 className="font-bold text-[#7b0b4c] mb-2">السلة</h3>
-
           {cart.length === 0 ? (
             <p className="text-sm text-gray-500">السلة فارغة حالياً.</p>
           ) : (
@@ -256,15 +188,11 @@ function CartButton() {
                   </li>
                 ))}
               </ul>
-
               <div className="flex justify-between text-sm font-medium mb-2">
                 <span>الإجمالي:</span>
                 <span className="text-[#7b0b4c]">{totalPrice}</span>
               </div>
-
-              <button onClick={handleWhatsAppOrder} className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]">
-                طلب عبر واتساب
-              </button>
+              <button onClick={handleWhatsAppOrder} className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]">طلب عبر واتساب</button>
             </>
           )}
         </div>
@@ -274,66 +202,60 @@ function CartButton() {
 }
 
 /* =======================
-   LangCurrency
-   - تعدل direction & lang و تخزن الاختيارات في localStorage
-   ======================= */
+   LangCurrency (مع Google Translate)
+======================= */
 function LangCurrency() {
-  const [currency, setCurrency] = useState(() => localStorage.getItem("currency") || "USD");
-  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "AR");
+  const [currency, setCurrency] = useState("USD");
+  const [lang, setLang] = useState("AR");
 
   useEffect(() => {
-    // direction + lang attribute
-    document.documentElement.dir = lang === "EN" ? "ltr" : "rtl";
-    document.documentElement.lang = lang === "EN" ? "en" : "ar";
-    localStorage.setItem("lang", lang);
-    localStorage.setItem("currency", currency);
-    // حدث مخصص إذا حبيت تحديث أسعار في المكونات الأخرى لاحقاً
-    window.dispatchEvent(new Event("localeChanged"));
-  }, [lang, currency]);
+    if (typeof window !== "undefined") {
+      const storedCurrency = localStorage.getItem("currency");
+      const storedLang = localStorage.getItem("lang");
+      if (storedCurrency) setCurrency(storedCurrency);
+      if (storedLang) setLang(storedLang);
+    }
+  }, []);
 
-  const currencies = {
-    USD: { label: "دولار", flag: "🇺🇸" },
-    QAR: { label: "ريال قطري", flag: "🇶🇦" },
-  };
+  const currencies = { USD: { label: "دولار", flag: "🇺🇸" }, QAR: { label: "ريال قطري", flag: "🇶🇦" } };
+  const languages = { AR: { label: "العربية", flag: "🇸🇦" }, EN: { label: "English", flag: "🇬🇧" } };
 
-  const languages = {
-    AR: { label: "العربية", flag: "🇸🇦" },
-    EN: { label: "English", flag: "🇬🇧" },
+  const handleLangChange = (key) => {
+    const currentUrl = window.location.href;
+    if (key === "EN") {
+      const translateUrl = `https://translate.google.com/translate?sl=ar&tl=en&u=${encodeURIComponent(currentUrl)}`;
+      window.open(translateUrl, "_blank");
+    } else {
+      window.location.href = currentUrl; // العربية تبقى الصفحة الأصلية
+    }
   };
 
   return (
     <div className="hidden sm:flex items-center gap-3 text-sm">
-      {/* العملة */}
       <div className="relative group">
         <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-          <span>{currencies[currency].flag}</span>
-          <span>{currencies[currency].label}</span>
+          <span>{currencies[currency]?.flag || "💲"}</span>
+          <span>{currencies[currency]?.label || currency}</span>
         </button>
         <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
           {Object.entries(currencies).map(([key, val]) => (
-            <button
-              key={key}
-              onClick={() => setCurrency(key)}
-              className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
-            >
+            <button key={key} onClick={() => setCurrency(key)} className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2">
               <span>{val.flag}</span>
               {val.label}
             </button>
           ))}
         </div>
       </div>
-
-      {/* اللغة */}
       <div className="relative group">
         <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-          <span>{languages[lang].flag}</span>
-          <span>{languages[lang].label}</span>
+          <span>{languages[lang]?.flag || "🌐"}</span>
+          <span>{languages[lang]?.label || lang}</span>
         </button>
         <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
           {Object.entries(languages).map(([key, val]) => (
             <button
               key={key}
-              onClick={() => setLang(key)}
+              onClick={() => handleLangChange(key)}
               className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
             >
               <span>{val.flag}</span>
@@ -347,8 +269,8 @@ function LangCurrency() {
 }
 
 /* =======================
-   LoginModal (كما في كودك، بدون حذف)
-   ======================= */
+   LoginModal
+======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
   const router = useRouter();
 
@@ -360,38 +282,28 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const users = [
-      { name: "المدير العام", email: "admin@misbah.com", password: "123456", role: "general_manager" },
+      { name: "المدير العام", email: "alfathhamid599@gmail.com", password: "123456", role: "general_manager" },
       { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456", role: "executive" },
       { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456", role: "hr" },
     ];
-
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
-
     const foundUser = users.find((u) => u.email === email && u.password === password);
-
     if (foundUser) {
       localStorage.setItem("user", JSON.stringify(foundUser));
       setUser(foundUser);
       onClose();
       router.push("/dashboard");
-    } else {
-      alert("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!");
-    }
+    } else alert("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!");
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in" onClick={onClose}>
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-3 left-3 text-gray-500 hover:text-gray-700">✕</button>
-
-        <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
-          {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
-        </h2>
-
+        <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">{mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm mb-1">البريد الإلكتروني</label>
@@ -401,22 +313,12 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
             <label className="block text-sm mb-1">كلمة المرور</label>
             <input type="password" name="password" required className="w-full px-3 py-2 border rounded-lg" />
           </div>
-
-          <button type="submit" className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]">
-            {mode === "login" ? "دخول" : "إنشاء حساب"}
-          </button>
+          <button type="submit" className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]">{mode === "login" ? "دخول" : "إنشاء حساب"}</button>
         </form>
-
         {mode === "login" && (
           <div className="mt-6 text-sm text-center space-y-2">
-            <p>
-              أليس لديك حساب؟{" "}
-              <button onClick={() => setAuthMode("register")} className="text-[#7b0b4c] font-bold">أنشئ حسابًا!</button>
-            </p>
-            <p>
-              نسيت كلمة السر؟{" "}
-              <Link href="/forgot" className="text-[#7b0b4c] font-bold">إضغط هنا!</Link>
-            </p>
+            <p>أليس لديك حساب؟ <button onClick={() => setAuthMode("register")} className="text-[#7b0b4c] font-bold">أنشئ حسابًا!</button></p>
+            <p>نسيت كلمة السر؟ <Link href="/forgot" className="text-[#7b0b4c] font-bold">إضغط هنا!</Link></p>
           </div>
         )}
       </div>
