@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link"; // 👈 استيراد Link
 
 export default function OnlineLearningSection() {
   return (
@@ -26,9 +27,12 @@ export default function OnlineLearningSection() {
               يمكنك الإلتحاق بالدورات التي تعقد في الأكاديمية دون الحاجة
               للتواجد داخل القاعة التدريبية
             </p>
-            <button className="bg-yellow-400 text-[#7a1353] px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition">
-              اعرف المزيد
-            </button>
+            {/* 1. التعلم عن بعد - اعرف المزيد */}
+            <Link href="/online-learning" passHref>
+              <button className="bg-yellow-400 text-[#7a1353] px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition">
+                اعرف المزيد
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -48,9 +52,12 @@ export default function OnlineLearningSection() {
               تعلم في الأوقات المناسبة لك من خلال مكتبة ضخمة من الدورات
               المسجلة
             </p>
-            <button className="bg-yellow-400 text-[#7a1353] px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition">
-              استعرض الدورات المتاحة
-            </button>
+            {/* 2. مكتبة الدورات - استعرض الدورات المتاحة */}
+            <Link href="/recorded-courses" passHref>
+              <button className="bg-yellow-400 text-[#7a1353] px-6 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition">
+                استعرض الدورات المتاحة
+              </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -63,9 +70,12 @@ export default function OnlineLearningSection() {
         <p className="text-gray-600 mb-8 text-lg">
           تعرف على مواعيد وأوقات إنعقاد الدورات التدريبية القادمة
         </p>
-        <button className="bg-[#7a1353] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#9e1a6d] transition">
-          اختر المواعيد المناسبة لك
-        </button>
+        {/* 3. جدول الدورات - اختر المواعيد المناسبة لك */}
+        <Link href="/course-schedule" passHref>
+          <button className="bg-[#7a1353] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#9e1a6d] transition">
+            اختر المواعيد المناسبة لك
+          </button>
+        </Link>
       </div>
     </section>
   );
