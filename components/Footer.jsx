@@ -197,7 +197,7 @@ export default function Footer() {
             <p className="text-sm text-[#3a0f24]">
               © {new Date().getFullYear()} مركز المصباح للتدريب المهني. جميع
            الحقوق محفوظة.
-             شركة<a> Deevsed</a> للتطوير البرمجي
+             شركة Deevsed للتطوير البرمجي
             </p>
           </div>
         </motion.div>
