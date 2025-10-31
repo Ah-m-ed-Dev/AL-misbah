@@ -231,40 +231,45 @@ function LangCurrency() {
   };
 
   return (
-    <div className="hidden sm:flex items-center gap-3 text-sm">
-      <div className="relative group">
-        <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-          <span>{currencies[currency]?.flag || "💲"}</span>
-          <span>{currencies[currency]?.label || currency}</span>
+   <div className="flex items-center gap-3 text-sm">
+  <div className="relative group">
+    <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
+      <span>{currencies[currency]?.flag || "💲"}</span>
+      <span>{currencies[currency]?.label || currency}</span>
+    </button>
+    <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
+      {Object.entries(currencies).map(([key, val]) => (
+        <button
+          key={key}
+          onClick={() => setCurrency(key)}
+          className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+        >
+          <span>{val.flag}</span>
+          {val.label}
         </button>
-        <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
-          {Object.entries(currencies).map(([key, val]) => (
-            <button key={key} onClick={() => setCurrency(key)} className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2">
-              <span>{val.flag}</span>
-              {val.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="relative group">
-        <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-          <span>{languages[lang]?.flag || "🌐"}</span>
-          <span>{languages[lang]?.label || lang}</span>
-        </button>
-        <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
-          {Object.entries(languages).map(([key, val]) => (
-            <button
-              key={key}
-              onClick={() => handleLangChange(key)}
-              className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
-            >
-              <span>{val.flag}</span>
-              {val.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      ))}
     </div>
+  </div>
+
+  <div className="relative group">
+    <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
+      <span>{languages[lang]?.flag || "🌐"}</span>
+      <span>{languages[lang]?.label || lang}</span>
+    </button>
+    <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
+{Object.entries(languages).map(([key, val]) => (
+        <button
+          key={key}
+          onClick={() => handleLangChange(key)}
+          className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+        >
+          <span>{val.flag}</span>
+          {val.label}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
   );
 }
 
