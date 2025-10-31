@@ -194,11 +194,17 @@ export default function Footer() {
               </a>
             </div>
 
-            <p className="text-sm text-[#3a0f24]">
-              © {new Date().getFullYear()} مركز المصباح للتدريب المهني. جميع
-           الحقوق محفوظة.
-             شركة Deevsed للتطوير البرمجي
-            </p>
+           <p className="text-sm text-[#3a0f24]">
+  © {new Date().getFullYear()} مركز المصباح للتدريب المهني. جميع الحقوق محفوظة.
+  <a 
+    href="https://www.facebook.com/profile.php?id=61578234835457" 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="text-blue-600 hover:underline"
+  >
+    شركة DevSeed
+  </a> للتطوير البرمجي
+</p>
           </div>
         </motion.div>
       </div>
