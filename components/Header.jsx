@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -220,7 +221,7 @@ function LangCurrency() {
   
 const currencies = {
   USD: { flag: "🇺🇸", label: "USD" },
-  QAR: { flag: "🇶🇦", label: "EUR" },
+  QAR: { flag: "🇶🇦", label: "QAR" },
 };
 
 const languages = {
