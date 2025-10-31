@@ -270,7 +270,7 @@ function CartButton() {
 function LangCurrency() {
   const currencies = {
     USD: { label: "دولار", flag: "🇺🇸" },
-    QAR: { label: "ريال قطري", flag: "🇶🇦" },
+    QAR: { label: "ريال", flag: "🇶🇦" },
   };
   const languages = {
     AR: { label: "العربية", flag: "🇸🇦" },
