@@ -165,24 +165,7 @@ export default function Footer() {
               >
                 <FaInstagram size={22} />
               </a>
-              <a
-                href={social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="لينكدإن"
-                className="hover:text-[#7a1353] transition-transform transform hover:scale-110"
-              >
-                <FaLinkedinIn size={22} />
-              </a>
-              <a
-                href={social.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="يوتيوب"
-                className="hover:text-[#7a1353] transition-transform transform hover:scale-110"
-              >
-                <FaYoutube size={22} />
-              </a>
+             
               <a
                 href={social.whatsapp}
                 target="_blank"
@@ -196,13 +179,13 @@ export default function Footer() {
 
            <p className="text-sm text-[#3a0f24]">
   © {new Date().getFullYear()} مركز المصباح للتدريب المهني. جميع الحقوق محفوظة.
-  <a 
+  شركة<a 
     href="https://www.facebook.com/profile.php?id=61578234835457" 
     target="_blank" 
     rel="noopener noreferrer"
     className="text-blue-600 hover:underline"
   >
-    شركة DevSeed
+     DevSeed
   </a> للتطوير البرمجي
 </p>
           </div>
