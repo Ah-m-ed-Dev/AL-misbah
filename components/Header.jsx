@@ -217,9 +217,15 @@ function LangCurrency() {
     }
   }, []);
 
-  
-const currencies = { USD: { label: "دولار", flag: "🇺🇸" }, QAR: { label: "ريال قطري", flag: "🇶🇦" } };
-const languages = { AR: { label: "العربية", flag: "🇸🇦" }, EN: { label: "English", flag: "🇬🇧" } };
+const currencies = {
+  USD: { label: "دولار", flag: "🇺🇸" },
+  QAR: { label: "ريال قطري", flag: "🇶🇦" },
+};
+
+const languages = {
+  AR: { label: "العربية", flag: "🇸🇦" },
+  EN: { label: "English", flag: "🇬🇧" },
+};
 
 export default function CurrencyLangSelector() {
   const [currency, setCurrency] = useState("USD");
@@ -227,7 +233,6 @@ export default function CurrencyLangSelector() {
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
-  // تحميل الاختيارات من localStorage عند أول تحميل للصفحة
   useEffect(() => {
     const savedCurrency = localStorage.getItem("currency");
     const savedLang = localStorage.getItem("lang");
@@ -235,23 +240,20 @@ export default function CurrencyLangSelector() {
     if (savedLang && languages[savedLang]) setLang(savedLang);
   }, []);
 
-  // حفظ العملة عند تغييرها
   const handleCurrencyChange = (key) => {
     setCurrency(key);
     localStorage.setItem("currency", key);
     setCurrencyOpen(false);
   };
 
-  // حفظ اللغة عند تغييرها
   const handleLangChange = (key) => {
     setLang(key);
-localStorage.setItem("lang", key);
+    localStorage.setItem("lang", key);
     setLangOpen(false);
   };
 
   return (
-    <div className="flex items-center gap-3 text-sm">
-
+    <div className="flex items-center gap-3 text-sm" dir={lang === "AR" ? "rtl" : "ltr"}>
       {/* العملات */}
       <div className="relative">
         <button
@@ -283,7 +285,7 @@ localStorage.setItem("lang", key);
         <button
           className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
           onClick={() => setLangOpen(!langOpen)}
->
+        >
           <span>{languages[lang]?.flag}</span>
           <span>{languages[lang]?.label}</span>
         </button>
@@ -303,10 +305,10 @@ localStorage.setItem("lang", key);
           </div>
         )}
       </div>
-
     </div>
   );
 }
+
 
 /* =======================
    LoginModal
