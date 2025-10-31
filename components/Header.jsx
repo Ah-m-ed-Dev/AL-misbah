@@ -218,31 +218,35 @@ function LangCurrency() {
   }, []);
 
   
-const currencies = {
-  USD: { flag: "🇺🇸", label: "USD" },
-  QAR: { flag: "🇶🇦", label: "QAR" },
-};
-
-const languages = {
-  ar: { flag: "🇸🇦", label: "عربي" },
-  en: { flag: "🇺🇸", label: "English" },
-};
+const currencies = { USD: { label: "دولار", flag: "🇺🇸" }, QAR: { label: "ريال قطري", flag: "🇶🇦" } };
+const languages = { AR: { label: "العربية", flag: "🇸🇦" }, EN: { label: "English", flag: "🇬🇧" } };
 
 export default function CurrencyLangSelector() {
   const [currency, setCurrency] = useState("USD");
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("AR");
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
-  const handleLangChange = (key) => {
-    setLang(key);
-    setLangOpen(false);
-    // هنا ممكن تستخدم i18n.changeLanguage(key) لو تستخدم i18next
-  };
+  // تحميل الاختيارات من localStorage عند أول تحميل للصفحة
+  useEffect(() => {
+    const savedCurrency = localStorage.getItem("currency");
+    const savedLang = localStorage.getItem("lang");
+    if (savedCurrency && currencies[savedCurrency]) setCurrency(savedCurrency);
+    if (savedLang && languages[savedLang]) setLang(savedLang);
+  }, []);
 
+  // حفظ العملة عند تغييرها
   const handleCurrencyChange = (key) => {
     setCurrency(key);
+    localStorage.setItem("currency", key);
     setCurrencyOpen(false);
+  };
+
+  // حفظ اللغة عند تغييرها
+  const handleLangChange = (key) => {
+    setLang(key);
+localStorage.setItem("lang", key);
+    setLangOpen(false);
   };
 
   return (
@@ -254,7 +258,8 @@ export default function CurrencyLangSelector() {
           className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
           onClick={() => setCurrencyOpen(!currencyOpen)}
         >
-          <span>{currencies[currency]?.flag || "💲"}</span><span>{currencies[currency]?.label || currency}</span>
+          <span>{currencies[currency]?.flag}</span>
+          <span>{currencies[currency]?.label}</span>
         </button>
 
         {currencyOpen && (
@@ -278,9 +283,9 @@ export default function CurrencyLangSelector() {
         <button
           className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
           onClick={() => setLangOpen(!langOpen)}
-        >
-          <span>{languages[lang]?.flag || "🌐"}</span>
-          <span>{languages[lang]?.label || lang}</span>
+>
+          <span>{languages[lang]?.flag}</span>
+          <span>{languages[lang]?.label}</span>
         </button>
 
         {langOpen && (
@@ -288,7 +293,8 @@ export default function CurrencyLangSelector() {
             {Object.entries(languages).map(([key, val]) => (
               <button
                 key={key}
-                onClick={() => handleLangChange(key)}className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+                onClick={() => handleLangChange(key)}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
                 <span>{val.flag}</span>
                 {val.label}
@@ -300,7 +306,7 @@ export default function CurrencyLangSelector() {
 
     </div>
   );
-} 
+}
 
 /* =======================
    LoginModal
