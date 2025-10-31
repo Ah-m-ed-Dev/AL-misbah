@@ -217,61 +217,90 @@ function LangCurrency() {
     }
   }, []);
 
-  const currencies = { USD: { label: "دولار", flag: "🇺🇸" }, QAR: { label: "ريال قطري", flag: "🇶🇦" } };
-  const languages = { AR: { label: "العربية", flag: "🇸🇦" }, EN: { label: "English", flag: "🇬🇧" } };
+  
+const currencies = {
+  USD: { flag: "🇺🇸", label: "USD" },
+  QAR: { flag: "🇶🇦", label: "EUR" },
+};
+
+const languages = {
+  ar: { flag: "🇸🇦", label: "عربي" },
+  en: { flag: "🇺🇸", label: "English" },
+};
+
+export default function CurrencyLangSelector() {
+  const [currency, setCurrency] = useState("USD");
+  const [lang, setLang] = useState("en");
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
 
   const handleLangChange = (key) => {
-    const currentUrl = window.location.href;
-    if (key === "EN") {
-      const translateUrl = `https://translate.google.com/translate?sl=ar&tl=en&u=${encodeURIComponent(currentUrl)}`;
-      window.open(translateUrl, "_blank");
-    } else {
-      window.location.href = currentUrl; // العربية تبقى الصفحة الأصلية
-    }
+    setLang(key);
+    setLangOpen(false);
+    // هنا ممكن تستخدم i18n.changeLanguage(key) لو تستخدم i18next
+  };
+
+  const handleCurrencyChange = (key) => {
+    setCurrency(key);
+    setCurrencyOpen(false);
   };
 
   return (
-   <div className="flex items-center gap-3 text-sm">
-  <div className="relative group">
-    <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-      <span>{currencies[currency]?.flag || "💲"}</span>
-      <span>{currencies[currency]?.label || currency}</span>
-    </button>
-    <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
-      {Object.entries(currencies).map(([key, val]) => (
-        <button
-          key={key}
-          onClick={() => setCurrency(key)}
-          className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
-        >
-          <span>{val.flag}</span>
-          {val.label}
-        </button>
-      ))}
-    </div>
-  </div>
+    <div className="flex items-center gap-3 text-sm">
 
-  <div className="relative group">
-    <button className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50">
-      <span>{languages[lang]?.flag || "🌐"}</span>
-      <span>{languages[lang]?.label || lang}</span>
-    </button>
-    <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border rounded-lg shadow text-sm">
-{Object.entries(languages).map(([key, val]) => (
+      {/* العملات */}
+      <div className="relative">
         <button
-          key={key}
-          onClick={() => handleLangChange(key)}
-          className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+          className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
+          onClick={() => setCurrencyOpen(!currencyOpen)}
         >
-          <span>{val.flag}</span>
-          {val.label}
+          <span>{currencies[currency]?.flag || "💲"}</span><span>{currencies[currency]?.label || currency}</span>
         </button>
-      ))}
+
+        {currencyOpen && (
+          <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow text-sm z-10">
+            {Object.entries(currencies).map(([key, val]) => (
+              <button
+                key={key}
+                onClick={() => handleCurrencyChange(key)}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+              >
+                <span>{val.flag}</span>
+                {val.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* اللغات */}
+      <div className="relative">
+        <button
+          className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
+          onClick={() => setLangOpen(!langOpen)}
+        >
+          <span>{languages[lang]?.flag || "🌐"}</span>
+          <span>{languages[lang]?.label || lang}</span>
+        </button>
+
+        {langOpen && (
+          <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow text-sm z-10">
+            {Object.entries(languages).map(([key, val]) => (
+              <button
+                key={key}
+                onClick={() => handleLangChange(key)}className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+              >
+                <span>{val.flag}</span>
+                {val.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
-  </div>
-</div>
   );
-}
+} 
 
 /* =======================
    LoginModal
