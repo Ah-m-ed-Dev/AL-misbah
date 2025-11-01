@@ -1,17 +1,11 @@
 import "./globals.css";
 import { Cairo } from "next/font/google";
-import Providers from "./providers"; // ✅ استيراد المزوّد (Client Component)
+import { AppProvider } from "./context/AppContext";
 
-// استدعاء الخط
 const cairo = Cairo({
   subsets: ["arabic"],
   weight: ["400", "700"],
 });
-
-export const metadata = {
-  title: "مركز المصباح",
-  description: "أكاديمية تدريب متكاملة لتطوير المهارات",
-};
 
 export default function RootLayout({ children }) {
   return (
@@ -21,7 +15,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className={`${cairo.className} bg-white text-gray-900`}>
-        <Providers>{children}</Providers>
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );
