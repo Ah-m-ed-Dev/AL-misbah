@@ -1,13 +1,11 @@
 "use client";
-
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "../app/context/AppContext";
+import { useApp } from "../app/context/AppContext"; // استخدام AppContext المعدل
 
-
-/* =======================
-   GlobalAnimations
+/* ======================= 
+   GlobalAnimations 
 ======================= */
 function GlobalAnimations() {
   useEffect(() => {
@@ -26,8 +24,8 @@ function GlobalAnimations() {
   return null;
 }
 
-/* =======================
-   Header
+/* ======================= 
+   Header 
 ======================= */
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
@@ -70,7 +68,6 @@ export default function Header() {
           <button className="flex items-center gap-2 text-gray-800 hover:text-[#7b0b4c]">
             <span className="text-sm">{t("topics")}</span>
           </button>
-
           <div className="flex items-center gap-3">
             {!user ? (
               <>
@@ -116,8 +113,8 @@ export default function Header() {
   );
 }
 
-/* =======================
-   SearchButton
+/* ======================= 
+   SearchButton 
 ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
@@ -153,8 +150,8 @@ function SearchButton() {
   );
 }
 
-/* =======================
-   CartButton
+/* ======================= 
+   CartButton 
 ======================= */
 function CartButton() {
   const [open, setOpen] = useState(false);
@@ -250,9 +247,7 @@ function CartButton() {
               </ul>
               <div className="flex justify-between text-sm font-medium mb-2">
                 <span>الإجمالي:</span>
-                <span className="text-[#7b0b4c]">
-                  {formatCurrency(totalPrice)}
-                </span>
+                <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
               </div>
               <button
                 onClick={handleWhatsAppOrder}
@@ -268,8 +263,8 @@ function CartButton() {
   );
 }
 
-/* =======================
-   LangCurrency
+/* ======================= 
+   LangCurrency 
 ======================= */
 function LangCurrency() {
   const { lang, setLang, currency, setCurrency } = useApp();
@@ -300,7 +295,6 @@ function LangCurrency() {
           <span>{currencies[currency]?.flag}</span>
           <span>{currencies[currency]?.label}</span>
         </button>
-
         {currencyOpen && (
           <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow text-sm z-10">
             {Object.entries(currencies).map(([key, val]) => (
@@ -312,8 +306,7 @@ function LangCurrency() {
                 }}
                 className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
-                <span>{val.flag}</span>
-                {val.label}
+                <span>{val.flag}</span> {val.label}
               </button>
             ))}
           </div>
@@ -332,7 +325,6 @@ function LangCurrency() {
           <span>{languages[lang]?.flag}</span>
           <span>{languages[lang]?.label}</span>
         </button>
-
         {langOpen && (
           <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow text-sm z-10">
             {Object.entries(languages).map(([key, val]) => (
@@ -344,8 +336,7 @@ function LangCurrency() {
                 }}
                 className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
-                <span>{val.flag}</span>
-                {val.label}
+                <span>{val.flag}</span> {val.label}
               </button>
             ))}
           </div>
@@ -354,6 +345,7 @@ function LangCurrency() {
     </div>
   );
 }
+
 
 /* =======================
    LoginModal (نفسه بدون تغيير)
