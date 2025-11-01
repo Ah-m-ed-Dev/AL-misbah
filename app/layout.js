@@ -1,5 +1,8 @@
+"use client";
+
 import "./globals.css";
 import { Cairo } from "next/font/google";
+import { AppProvider } from "./context/AppContext"; // ✅ استيراد الكونتكست
 
 // استدعاء الخط
 const cairo = Cairo({
@@ -19,8 +22,12 @@ export default function RootLayout({ children }) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
+
       <body className={`${cairo.className} bg-white text-gray-900`}>
-        {children}
+        {/* ✅ تغليف التطبيق داخل AppProvider */}
+        <AppProvider>
+          {children}
+        </AppProvider>
       </body>
     </html>
   );
