@@ -174,6 +174,11 @@ export default function CoursesCarousel() {
             <p className="text-sm text-gray-500 mb-2">
               التصنيف: <span className="font-medium">{selectedCourse.category}</span>
             </p>
+
+<p className="text-sm text-gray-500 mb-2">
+             السعر: <span className="font-medium">{selectedCourse.price}</span>
+            </p>
+
             <p className="text-gray-700 mb-4 leading-relaxed">{selectedCourse.description}</p>
           </div>
         </div>
