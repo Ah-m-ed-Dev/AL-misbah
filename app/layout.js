@@ -1,13 +1,11 @@
-"use client";
-
 import "./globals.css";
 import { Cairo } from "next/font/google";
-import { AppProvider } from "./context/AppContext"; // ✅ استيراد الكونتكست
+import Providers from "./providers"; // ✅ استيراد المزوّد (Client Component)
 
 // استدعاء الخط
 const cairo = Cairo({
   subsets: ["arabic"],
-  weight: ["400", "700"], // الأوزان الممكن تختارها
+  weight: ["400", "700"],
 });
 
 export const metadata = {
@@ -22,12 +20,8 @@ export default function RootLayout({ children }) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-
       <body className={`${cairo.className} bg-white text-gray-900`}>
-        {/* ✅ تغليف التطبيق داخل AppProvider */}
-        <AppProvider>
-          {children}
-        </AppProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
