@@ -180,6 +180,14 @@ export default function CoursesCarousel() {
             </p>
 
             <p className="text-gray-700 mb-4 leading-relaxed">{selectedCourse.description}</p>
+
+<button 
+  onClick={() => addToCart(selectedCourse)}
+  className="w-full bg-[#7a1353] text-white py-2 rounded-lg mt-4"
+>
+  سجل في الدورة
+</button>
+
           </div>
         </div>
       )}
