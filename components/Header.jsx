@@ -273,12 +273,16 @@ function CartButton() {
       )}
     </div>
   </div>
-)}
+)
 
+}
+
+} 
 
 /* =======================
    LangCurrency
 ======================= */
+
 function LangCurrency() {
   const { lang, setLang, currency, setCurrency } = useApp();
   const [currencyOpen, setCurrencyOpen] = useState(false);
