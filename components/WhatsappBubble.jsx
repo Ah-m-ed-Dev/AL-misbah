@@ -3,7 +3,7 @@
 export default function WhatsappBubble() {
   return (
     <a
-      href="#"
+      href="https://wa.me/97472041794"
       className="fixed left-6 bottom-6 z-40 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full shadow-2xl flex items-center gap-3 pr-5 pl-3 py-2"
     >
       <span className="w-10 h-10 rounded-full bg-white/20 grid place-items-center">
