@@ -31,12 +31,9 @@ function CourseCard({ course, onClick }) {
         <p className="text-sm text-gray-600 mb-3" style={{ minHeight: "2.4rem" }}>
           {course.description}
         </p>
-
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            <span className="line-through text-gray-400 text-sm mr-2">
-              {course.price}
-            </span>
+            <span className="line-through text-gray-400 text-sm mr-2">{course.price}</span>
             <span className="font-bold text-[#7a1353]">{course.discount}</span>
           </div>
         </div>
@@ -54,17 +51,26 @@ export default function CoursesCarousel() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🧩 جلب البيانات من Supabase
+  // دالة إضافة الدورة للسلة
+  const addToCart = (course) => {
+    const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!currentCart.find((c) => c.id === course.id)) {
+      currentCart.push(course);
+      localStorage.setItem("cart", JSON.stringify(currentCart));
+      window.dispatchEvent(new Event("cartUpdated"));
+      alert("تمت إضافة الدورة للسلة!");
+    } else {
+      alert("الدورة موجودة بالفعل في السلة.");
+    }
+  };
+
+  // جلب البيانات من Supabase
   const fetchCourses = async () => {
-    const { data, error } = await supabase
-      .from("courses")
-      .select("*")
-      .order("id", { ascending: true });
+    const { data, error } = await supabase.from("courses").select("*").order("id", { ascending: true });
 
     if (error) {
       console.error("خطأ في جلب البيانات:", error);
     } else {
-      // ✅ معالجة خاصة لـ CCNA لتكون في "مهارات الحاسوب"
       const processed = data.map((c) => {
         if (c.title?.toLowerCase().includes("ccna")) {
           return { ...c, category: "مهارات الحاسوب" };
@@ -74,7 +80,7 @@ export default function CoursesCarousel() {
 
       setCourses(processed);
 
-      // ✅ توليد الفئات تلقائياً من البيانات
+      // توليد الفئات تلقائياً
       const cats = Array.from(new Set(processed.map((c) => c.category))).filter(Boolean);
       setCategories(["الكل", ...cats]);
     }
@@ -85,14 +91,10 @@ export default function CoursesCarousel() {
   useEffect(() => {
     fetchCourses();
 
-    // ⚡️ الاستماع للتحديثات في الوقت الفعلي
+    // الاستماع للتحديثات في الوقت الفعلي
     const channel = supabase
       .channel("courses-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "courses" },
-        () => fetchCourses()
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "courses" }, () => fetchCourses())
       .subscribe();
 
     return () => {
@@ -100,17 +102,13 @@ export default function CoursesCarousel() {
     };
   }, []);
 
-  // ✅ الفلترة حسب الفئة
+  // الفلترة حسب الفئة
   const filteredCourses =
-    activeTab === "الكل"
-      ? courses
-      : courses.filter((c) => c.category === activeTab);
+    activeTab === "الكل" ? courses : courses.filter((c) => c.category === activeTab);
 
   const visibleCount = 4;
   const maxStart = Math.max(0, filteredCourses.length - visibleCount);
   const visible = filteredCourses.slice(start, start + visibleCount);
-  const canPrev = start > 0;
-  const canNext = start < maxStart;
 
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
@@ -119,7 +117,7 @@ export default function CoursesCarousel() {
           تصفّح <span className="text-[#7a1353]">الدورات</span> الأكثر طلبًا
         </h2>
 
-        {/* ✅ أزرار الفئات */}
+        {/* أزرار الفئات */}
         <div className="flex flex-wrap items-center gap-4 mb-10">
           {categories.map((cat) => (
             <button
@@ -139,7 +137,7 @@ export default function CoursesCarousel() {
           ))}
         </div>
 
-        {/* ✅ عرض الدورات */}
+        {/* عرض الدورات */}
         {loading ? (
           <p className="text-center text-gray-500">جاري تحميل الدورات...</p>
         ) : filteredCourses.length === 0 ? (
@@ -153,7 +151,7 @@ export default function CoursesCarousel() {
         )}
       </div>
 
-      {/* ✅ نافذة تفاصيل الدورة */}
+      {/* نافذة تفاصيل الدورة */}
       {selectedCourse && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 relative">
@@ -174,20 +172,18 @@ export default function CoursesCarousel() {
             <p className="text-sm text-gray-500 mb-2">
               التصنيف: <span className="font-medium">{selectedCourse.category}</span>
             </p>
-
-<p className="text-sm text-gray-500 mb-2">
-             السعر: <span className="font-medium">{selectedCourse.price}</span>
+            <p className="text-sm text-gray-500 mb-2">
+              السعر: <span className="font-medium">{selectedCourse.price}</span>
             </p>
-
             <p className="text-gray-700 mb-4 leading-relaxed">{selectedCourse.description}</p>
 
-<button 
-  onClick={() => addToCart(selectedCourse)}
-  className="w-full bg-[#7a1353] text-white py-2 rounded-lg mt-4"
->
-  سجل في الدورة
-</button>
-
+            {/* زر إضافة للسلة */}
+            <button
+              onClick={() => addToCart(selectedCourse)}
+              className="w-full bg-[#7a1353] text-white py-2 rounded-lg mt-4"
+            >
+              سجل في الدورة
+            </button>
           </div>
         </div>
       )}
