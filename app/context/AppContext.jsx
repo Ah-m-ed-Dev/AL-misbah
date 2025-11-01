@@ -1,14 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-/**
- * AppContext
- * يوفر: lang, setLang, currency, setCurrency, t(key), formatCurrency(number)
- */
-
-const AppContext = createContext();
-
+// القاموس اللغوي
 const DICT = {
   AR: {
     login: "تسجيل الدخول",
@@ -24,8 +18,6 @@ const DICT = {
     campaigns_title: "حملاتنا الإعلانية",
     add_course: "إضافة دورة",
     courses: "الدورات",
-    Learn today, to lead tomorrow.:"تعلّم اليوم، لِتقودَّ غدًا", 
-    // أضف مفاتيح إضافية كما تريد...
   },
   EN: {
     login: "Login",
@@ -41,17 +33,16 @@ const DICT = {
     campaigns_title: "Our Campaigns",
     add_course: "Add Course",
     courses: "Courses",
-Learn today, to lead tomorrow.:"تعلّم اليوم، لِتقودَّ غدًا",
-    // أضف مفاتيح إضافية كما تريد...
   },
 };
 
+const AppContext = createContext();
+
 export function AppProvider({ children }) {
-  const [lang, setLang] = useState("AR"); // "AR" | "EN"
-  const [currency, setCurrency] = useState("QAR"); // "QAR" | "USD"
+  const [lang, setLang] = useState("AR");
+  const [currency, setCurrency] = useState("QAR");
 
   useEffect(() => {
-    // تحميل محفوظات المستخدم
     const sLang = localStorage.getItem("app_lang");
     const sCur = localStorage.getItem("app_currency");
     if (sLang) setLang(sLang);
@@ -61,20 +52,15 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("app_lang", lang);
     localStorage.setItem("app_currency", currency);
-
-    // ضبط attributes أساسية للصفحة
     document.documentElement.lang = lang === "EN" ? "en" : "ar";
     document.documentElement.dir = lang === "EN" ? "ltr" : "rtl";
   }, [lang, currency]);
 
-  const t = (key) => {
-    return (DICT[lang] && DICT[lang][key]) || key;
-  };
+  const t = (key) => (DICT[lang] && DICT[lang][key]) || key;
 
   const formatCurrency = (value) => {
     if (value == null || value === "") return "";
     const num = typeof value === "number" ? value : parseFloat(value.toString().replace(/[^\d.-]/g, "")) || 0;
-    // QAR -> ريال قطري, USD -> $
     if (currency === "QAR") {
       return new Intl.NumberFormat(lang === "EN" ? "en-QA" : "ar-QA", {
         style: "currency",
