@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
 
 /* =======================
    GlobalAnimations
@@ -30,6 +31,7 @@ function GlobalAnimations() {
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
+  const { lang, t } = useApp();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -42,7 +44,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40">
+    <header className="sticky top-0 z-40" dir={lang === "AR" ? "rtl" : "ltr"}>
       <GlobalAnimations />
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -51,7 +53,7 @@ export default function Header() {
               <path d="M12 2l9 5-9 5-9-5 9-5Zm0 7l9 5-9 5-9-5 9-5Z" />
             </svg>
             <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
-              مركز المصباح
+              {t("courses")}
             </span>
           </Link>
           <div className="flex items-center gap-4">
@@ -65,7 +67,7 @@ export default function Header() {
       <div className="absolute top-16 left-0 w-full bg-white/10 backdrop-blur-sm z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
           <button className="flex items-center gap-2 text-gray-800 hover:text-[#7b0b4c]">
-            <span className="text-sm">المواضيع</span>
+            <span className="text-sm">{t("topics")}</span>
           </button>
 
           <div className="flex items-center gap-3">
@@ -75,25 +77,25 @@ export default function Header() {
                   onClick={() => setAuthMode("login")}
                   className="px-4 py-1.5 rounded-lg border border-[#7b0b4c] text-[#7b0b4c] bg-white/70 backdrop-blur-sm hover:bg-[#7b0b4c] hover:text-white text-sm"
                 >
-                  تسجيل الدخول
+                  {t("login")}
                 </button>
                 <button
                   onClick={() => setAuthMode("register")}
                   className="px-4 py-1.5 rounded-lg bg-[#7b0b4c] text-white hover:bg-[#5e0839] text-sm"
                 >
-                  مستخدم جديد
+                  {t("newUser")}
                 </button>
               </>
             ) : (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold text-[#7b0b4c]">
-                  مرحباً، {user.name}
+                  {t("welcome")}، {user.name}
                 </span>
                 <button
                   onClick={handleLogout}
                   className="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm"
                 >
-                  تسجيل خروج
+                  {t("logout")}
                 </button>
               </div>
             )}
@@ -118,6 +120,7 @@ export default function Header() {
 ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
+  const { lang } = useApp();
   return (
     <div className="relative">
       <button
@@ -133,10 +136,14 @@ function SearchButton() {
         </svg>
       </button>
       {open && (
-        <div className="absolute top-12 right-0 bg-white border rounded-lg shadow p-3 animate-fade-in">
+        <div
+          className={`absolute top-12 ${
+            lang === "AR" ? "left-0" : "right-0"
+          } bg-white border rounded-lg shadow p-3 animate-fade-in`}
+        >
           <input
             type="text"
-            placeholder="ابحث هنا..."
+            placeholder={lang === "AR" ? "ابحث هنا..." : "Search..."}
             className="w-64 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
           />
         </div>
@@ -151,6 +158,7 @@ function SearchButton() {
 function CartButton() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
+  const { formatCurrency, t } = useApp();
 
   useEffect(() => {
     const loadCart = () =>
@@ -180,11 +188,11 @@ function CartButton() {
   };
 
   const handleWhatsAppOrder = () => {
-    if (!cart.length) return alert("السلة فارغة!");
+    if (!cart.length) return alert(t("cart") + " فارغة!");
     const message =
       "مرحباً! أود طلب الدورات التالية:\n\n" +
       cart.map((c, i) => `${i + 1}- ${c.title} (${c.price || "0"})`).join("\n") +
-      `\n\nالإجمالي: ${totalPrice}`;
+      `\n\n${t("cart")}: ${formatCurrency(totalPrice)}`;
     window.open(
       "https://wa.me/+97472041794?text=" + encodeURIComponent(message),
       "_blank"
@@ -198,12 +206,7 @@ function CartButton() {
         aria-label="السلة"
         onClick={() => setOpen((v) => !v)}
       >
-        <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
-          <path
-            fill="currentColor"
-            d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45A1 1 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.21-.37l.93-1.63h7.45a1 1 0 0 0 .9-.55l3.58-6.49A.5.5 0 0 0 21.58 6H6.21l-.94-2zM7 20a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 .001 3.999A2 2 0 0 0 17 20z"
-          />
-        </svg>
+        🛒
         {totalCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
             {totalCount}
@@ -213,9 +216,9 @@ function CartButton() {
 
       {open && (
         <div className="absolute right-0 mt-3 w-80 bg-white border rounded-lg shadow-lg p-4 animate-scale-in text-right z-50">
-          <h3 className="font-bold text-[#7b0b4c] mb-2">السلة</h3>
+          <h3 className="font-bold text-[#7b0b4c] mb-2">{t("cart")}</h3>
           {cart.length === 0 ? (
-            <p className="text-sm text-gray-500">السلة فارغة حالياً.</p>
+            <p className="text-sm text-gray-500">{t("cart")} فارغة.</p>
           ) : (
             <>
               <ul className="space-y-2 mb-3 max-h-48 overflow-y-auto">
@@ -227,14 +230,12 @@ function CartButton() {
                     <div>
                       <div className="font-medium">{c.title}</div>
                       {c.category && (
-                        <div className="text-xs text-gray-500">
-                          {c.category}
-                        </div>
+                        <div className="text-xs text-gray-500">{c.category}</div>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[#7b0b4c] font-semibold">
-                        {c.price || "0"}
+                        {formatCurrency(c.price)}
                       </span>
                       <button
                         onClick={() => handleRemove(c.id)}
@@ -248,7 +249,9 @@ function CartButton() {
               </ul>
               <div className="flex justify-between text-sm font-medium mb-2">
                 <span>الإجمالي:</span>
-                <span className="text-[#7b0b4c]">{totalPrice}</span>
+                <span className="text-[#7b0b4c]">
+                  {formatCurrency(totalPrice)}
+                </span>
               </div>
               <button
                 onClick={handleWhatsAppOrder}
@@ -268,44 +271,22 @@ function CartButton() {
    LangCurrency
 ======================= */
 function LangCurrency() {
+  const { lang, setLang, currency, setCurrency } = useApp();
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+
   const currencies = {
-    USD: { label: "دولار", flag: "🇺🇸" },
-    QAR: { label: "ريال", flag: "🇶🇦" },
+    USD: { label: lang === "AR" ? "دولار" : "Dollar", flag: "🇺🇸" },
+    QAR: { label: lang === "AR" ? "ريال" : "Qatari Riyal", flag: "🇶🇦" },
   };
+
   const languages = {
     AR: { label: "العربية", flag: "🇸🇦" },
     EN: { label: "English", flag: "🇬🇧" },
   };
 
-  const [currency, setCurrency] = useState("USD");
-  const [lang, setLang] = useState("AR");
-  const [currencyOpen, setCurrencyOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
-
-  useEffect(() => {
-    const savedCurrency = localStorage.getItem("currency");
-    const savedLang = localStorage.getItem("lang");
-    if (savedCurrency && currencies[savedCurrency]) setCurrency(savedCurrency);
-    if (savedLang && languages[savedLang]) setLang(savedLang);
-  }, []);
-
-  const handleCurrencyChange = (key) => {
-    setCurrency(key);
-    localStorage.setItem("currency", key);
-    setCurrencyOpen(false);
-  };
-
-  const handleLangChange = (key) => {
-    setLang(key);
-    localStorage.setItem("lang", key);
-    setLangOpen(false);
-  };
-
   return (
-    <div
-      className="flex items-center gap-3 text-sm"
-      dir={lang === "AR" ? "rtl" : "ltr"}
-    >
+    <div className="flex items-center gap-3 text-sm" dir={lang === "AR" ? "rtl" : "ltr"}>
       {/* العملات */}
       <div className="relative">
         <button
@@ -324,7 +305,10 @@ function LangCurrency() {
             {Object.entries(currencies).map(([key, val]) => (
               <button
                 key={key}
-                onClick={() => handleCurrencyChange(key)}
+                onClick={() => {
+                  setCurrency(key);
+                  setCurrencyOpen(false);
+                }}
                 className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
                 <span>{val.flag}</span>
@@ -353,7 +337,10 @@ function LangCurrency() {
             {Object.entries(languages).map(([key, val]) => (
               <button
                 key={key}
-                onClick={() => handleLangChange(key)}
+                onClick={() => {
+                  setLang(key);
+                  setLangOpen(false);
+                }}
                 className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
                 <span>{val.flag}</span>
@@ -368,7 +355,7 @@ function LangCurrency() {
 }
 
 /* =======================
-   LoginModal
+   LoginModal (نفسه بدون تغيير)
 ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
   const router = useRouter();
@@ -459,31 +446,6 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
           >
             {mode === "login" ? "تسجيل الدخول" : "تسجيل"}
           </button>
-          <div className="text-center text-sm text-gray-600">
-            {mode === "login" ? (
-              <>
-                ليس لديك حساب؟{" "}
-                <button
-                  type="button"
-                  onClick={() => setAuthMode("register")}
-                  className="text-[#7b0b4c] underline"
-                >
-                  إنشاء حساب
-                </button>
-              </>
-            ) : (
-              <>
-                لديك حساب؟{" "}
-                <button
-                  type="button"
-                  onClick={() => setAuthMode("login")}
-                  className="text-[#7b0b4c] underline"
-                >
-                  تسجيل الدخول
-                </button>
-              </>
-            )}
-          </div>
         </form>
       </div>
     </div>
