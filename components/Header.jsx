@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "@/context/AppContext";
+import { useApp } from "../app/context/AppContext";
+
 
 /* =======================
    GlobalAnimations
