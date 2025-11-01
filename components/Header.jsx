@@ -1,11 +1,12 @@
 "use client";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "../app/context/AppContext"; // استخدام AppContext المعدل
+import { useApp } from "../app/context/AppContext";
 
-/* ======================= 
-   GlobalAnimations 
+/* =======================
+   GlobalAnimations
 ======================= */
 function GlobalAnimations() {
   useEffect(() => {
@@ -24,8 +25,8 @@ function GlobalAnimations() {
   return null;
 }
 
-/* ======================= 
-   Header 
+/* =======================
+   Header
 ======================= */
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
@@ -45,6 +46,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40" dir={lang === "AR" ? "rtl" : "ltr"}>
       <GlobalAnimations />
+
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
@@ -55,6 +57,7 @@ export default function Header() {
               {t("courses")}
             </span>
           </Link>
+
           <div className="flex items-center gap-4">
             <SearchButton />
             <CartButton />
@@ -68,6 +71,7 @@ export default function Header() {
           <button className="flex items-center gap-2 text-gray-800 hover:text-[#7b0b4c]">
             <span className="text-sm">{t("topics")}</span>
           </button>
+
           <div className="flex items-center gap-3">
             {!user ? (
               <>
@@ -113,12 +117,13 @@ export default function Header() {
   );
 }
 
-/* ======================= 
-   SearchButton 
+/* =======================
+   SearchButton
 ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
   const { lang } = useApp();
+
   return (
     <div className="relative">
       <button
@@ -133,6 +138,7 @@ function SearchButton() {
           />
         </svg>
       </button>
+
       {open && (
         <div
           className={`absolute top-12 ${
@@ -150,8 +156,8 @@ function SearchButton() {
   );
 }
 
-/* ======================= 
-   CartButton 
+/* =======================
+   CartButton
 ======================= */
 function CartButton() {
   const [open, setOpen] = useState(false);
@@ -159,8 +165,7 @@ function CartButton() {
   const { formatCurrency, t } = useApp();
 
   useEffect(() => {
-    const loadCart = () =>
-      setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
+    const loadCart = () => setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
     loadCart();
     window.addEventListener("storage", loadCart);
     window.addEventListener("cartUpdated", loadCart);
@@ -172,9 +177,7 @@ function CartButton() {
 
   const totalCount = cart.length;
   const totalPrice = cart.reduce(
-    (sum, c) =>
-      sum +
-      (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0),
+    (sum, c) => sum + (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0),
     0
   );
 
@@ -197,12 +200,12 @@ function CartButton() {
     );
   };
 
-    return (
+  return (
     <div className="relative">
       <button
         className="relative p-2 rounded-full hover:bg-gray-100"
         aria-label="السلة"
-        onClick={() => setOpen(true)} // الآن نفتح المودال
+        onClick={() => setOpen(true)}
       >
         🛒
         {totalCount > 0 && (
@@ -212,75 +215,71 @@ function CartButton() {
         )}
       </button>
 
-      {/* نافذة منبثقة */}
       {open && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
-    <div
-      className={`bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative 
-                  ${open ? "animate-scale-in" : "animate-scale-out"}`}
-    >
-      {/* زر الإغلاق */}
-      <button
-        onClick={() => setOpen(false)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
-      >
-        ✕
-      </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in">
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
+            >
+              ✕
+            </button>
 
-      {/* عنوان السلة */}
-      <h3 className="font-bold text-[#7b0b4c] mb-4 text-lg">{t("cart")}</h3>
+            <h3 className="font-bold text-[#7b0b4c] mb-4 text-lg">{t("cart")}</h3>
 
-      {/* محتوى السلة */}
-      {cart.length === 0 ? (
-        <p className="text-sm text-gray-500">{t("cart")} فارغة.</p>
-      ) : (
-        <>
-          <ul className="space-y-2 mb-3 max-h-64 overflow-y-auto">
-            {cart.map((c) => (
-              <li
-                key={c.id}
-                className="flex items-center justify-between border-b pb-1 text-sm"
-              >
-                <div>
-                  <div className="font-medium">{c.title}</div>
-                  {c.category && (
-                    <div className="text-xs text-gray-500">{c.category}</div>
-                  )}
+            {cart.length === 0 ? (
+              <p className="text-sm text-gray-500">{t("cart")} فارغة.</p>
+            ) : (
+              <>
+                <ul className="space-y-2 mb-3 max-h-64 overflow-y-auto">
+                  {cart.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex items-center justify-between border-b pb-1 text-sm"
+                    >
+                      <div>
+                        <div className="font-medium">{c.title}</div>
+                        {c.category && (
+                          <div className="text-xs text-gray-500">{c.category}</div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#7b0b4c] font-semibold">
+                          {formatCurrency(c.price)}
+                        </span>
+                        <button
+                          onClick={() => handleRemove(c.id)}
+                          className="text-gray-400 hover:text-red-500 text-xs"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex justify-between text-sm font-medium mb-4">
+                  <span>الإجمالي:</span>
+                  <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#7b0b4c] font-semibold">
-                    {formatCurrency(c.price)}
-                  </span>
-                  <button
-                    onClick={() => handleRemove(c.id)}
-                    className="text-gray-400 hover:text-red-500 text-xs"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
 
-          <div className="flex justify-between text-sm font-medium mb-4">
-            <span>الإجمالي:</span>
-            <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
+                <button
+                  onClick={handleWhatsAppOrder}
+                  className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]"
+                >
+                  طلب عبر واتساب
+                </button>
+              </>
+            )}
           </div>
-
-          <button
-            onClick={handleWhatsAppOrder}
-            className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]"
-          >
-            طلب عبر واتساب
-          </button>
-        </>
+        </div>
       )}
     </div>
-  </div>
-)}
+  );
+}
 
-/* ======================= 
-   LangCurrency 
+/* =======================
+   LangCurrency
 ======================= */
 function LangCurrency() {
   const { lang, setLang, currency, setCurrency } = useApp();
@@ -362,9 +361,8 @@ function LangCurrency() {
   );
 }
 
-
 /* =======================
-   LoginModal (نفسه بدون تغيير)
+   LoginModal
 ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
   const router = useRouter();
@@ -377,6 +375,7 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const users = [
       {
         name: "المدير العام",
@@ -397,18 +396,22 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
         role: "hr",
       },
     ];
+
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
     const foundUser = users.find(
       (u) => u.email === email && u.password === password
     );
+
     if (foundUser) {
       localStorage.setItem("user", JSON.stringify(foundUser));
       setUser(foundUser);
       onClose();
       router.push("/dashboard");
-    } else alert("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!");
+    } else {
+      alert("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!");
+    }
   };
 
   return (
