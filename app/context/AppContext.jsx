@@ -24,6 +24,7 @@ const DICT = {
     campaigns_title: "حملاتنا الإعلانية",
     add_course: "إضافة دورة",
     courses: "الدورات",
+    Learn today, to lead tomorrow.:"تعلّم اليوم، لِتقودَّ غدًا", 
     // أضف مفاتيح إضافية كما تريد...
   },
   EN: {
@@ -40,6 +41,7 @@ const DICT = {
     campaigns_title: "Our Campaigns",
     add_course: "Add Course",
     courses: "Courses",
+Learn today, to lead tomorrow.:"تعلّم اليوم، لِتقودَّ غدًا",
     // أضف مفاتيح إضافية كما تريد...
   },
 };
