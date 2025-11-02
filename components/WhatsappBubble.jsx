@@ -4,7 +4,13 @@ import { useEffect } from "react";
 
 export default function WhatsappWidget() {
   useEffect(() => {
-    // إنشاء العنصر script
+    // لو الويدجت موجودة بالفعل، لا تعيد تحميلها
+    if (window.__ednaLoaded) return;
+
+    // ضع علامة أنه تم التحميل
+    window.__ednaLoaded = true;
+
+    // إنشاء عنصر السكريبت
     const s = document.createElement("script");
     s.type = "text/javascript";
     s.async = true;
@@ -18,7 +24,7 @@ export default function WhatsappWidget() {
         backgroundColor: "#22c55e",
         ctaText: "Contact us",
         icon: "whatsapp",
-        position: "left",
+        position: "right",
       },
       brandSetting: {
         backgroundColor: "#7b0b4c",
@@ -31,7 +37,7 @@ export default function WhatsappWidget() {
       },
     };
 
-    // عند تحميل السكريبت، ننشئ الويدجت
+    // تشغيل الويدجت عند تحميل السكريبت
     s.onload = () => {
       if (typeof CreateWhatsappChatWidget !== "undefined") {
         CreateWhatsappChatWidget(options);
@@ -39,14 +45,7 @@ export default function WhatsappWidget() {
     };
 
     document.body.appendChild(s);
-
-    // تنظيف عند إلغاء المكون
-    return () => {
-      s.remove();
-      const widget = document.getElementById("edna-whatsapp-widget");
-      if (widget) widget.remove();
-    };
   }, []);
 
-  return null; // المكون ما يعرضش أي شيء بنفسه
+  return null;
 }
