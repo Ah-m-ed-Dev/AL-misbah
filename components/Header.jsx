@@ -155,8 +155,8 @@ function SearchButton() {
   );
 }
 
-/* =======================
-   CartButton
+/* =======================    
+   CartButton 
 ======================= */
 function CartButton() {
   const [open, setOpen] = useState(false);
@@ -215,8 +215,8 @@ function CartButton() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in">
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/50 animate-fade-in">
+          <div className="bg-white rounded-t-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in translate-y-0 transition-transform duration-300">
             <button
               onClick={() => setOpen(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
@@ -276,6 +276,7 @@ function CartButton() {
     </div>
   );
 }
+
 
 /* =======================
    LangCurrency
