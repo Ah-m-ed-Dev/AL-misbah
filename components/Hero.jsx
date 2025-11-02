@@ -1,19 +1,21 @@
 "use client";
-
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
   return (
     <section className="relative">
+      {/* ✅ خلفية الصورة */}
       <div className="absolute inset-0">
         <img
-          src="hero.jpg" // ← استبدل باسم الصورة عندك في public
+          src="hero.jpg" // ← استبدل باسم الصورة في مجلد public
           alt="Laptop hero"
           className="w-full h-[56vh] lg:h-[64vh] object-cover"
         />
-        <div className="absolute inset-0 bg-gray-900/60" /> {/* Overlay شفاف */}
+        <div className="absolute inset-0 bg-gray-900/60" /> {/* تظليل شفاف */}
       </div>
 
+      {/* ✅ النصوص وصندوق البحث */}
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col justify-center h-[56vh] lg:h-[64vh]">
         <div className="mt-8 md:mt-0 max-w-2xl flex flex-col items-end">
           <h1 className="text-4xl md:text-5xl font-extrabold leading-snug text-white text-right">
@@ -22,6 +24,8 @@ export default function Hero() {
           <p className="mt-3 text-lg text-white/80 text-right">
             تعلّم.. طوِّر.. وحقق نجاحك مع مركز المصباح للتدريب الفني والعمالة
           </p>
+
+          {/* ✅ مكون البحث داخل نفس الملف */}
           <SearchBar />
         </div>
       </div>
@@ -29,31 +33,25 @@ export default function Hero() {
   );
 }
 
-/* =======================
-   SearchButton
-======================= */
-
-
-
+/* ======================= SearchBar ======================= */
 function SearchBar() {
   const [query, setQuery] = useState("");
+  const router = useRouter();
 
   const handleSearch = (e) => {
-    e.preventDefault(); // لمنع إعادة تحميل الصفحة
+    e.preventDefault();
     if (!query.trim()) return;
 
-    // هنا ضع منطق البحث الحقيقي مثلاً:
+    // هنا يمكنك استبدال alert بمنطق البحث الفعلي أو توجيه المستخدم
     alert(`جاري البحث عن: ${query}`);
-
-    // يمكنك استبدال alert بـ:
+    // مثال للتوجيه إلى صفحة بحث:
     // router.push(`/search?query=${encodeURIComponent(query)}`);
-    // أو استدعاء API للبحث عن النتائج
   };
 
   return (
     <form
       onSubmit={handleSearch}
-      className="mt-6 w-full max-w-md"
+      className="mt-6 w-full max-w-md mx-auto"
     >
       <div className="relative">
         <input
@@ -63,7 +61,7 @@ function SearchBar() {
           placeholder="ابحث عن..."
           className="w-full rounded-2xl bg-white/95 shadow-lg focus:outline-none focus:ring-4 focus:ring-[#7b0b4c]/40 px-14 py-4 text-lg placeholder-gray-400"
         />
-
+        {/* زر البحث */}
         <button
           type="submit"
           className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#7b0b4c]"
@@ -80,5 +78,3 @@ function SearchBar() {
     </form>
   );
 }
-
-export default SearchBar;
