@@ -56,7 +56,7 @@ export default function Header() {
     className="w-10 h-10 object-contain" // ← حجم الصورة وتناسبها
   />
   <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
-    {t("courses")}
+    مركز المصباح 
   </span>
 </Link>
 
