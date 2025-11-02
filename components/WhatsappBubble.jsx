@@ -17,7 +17,8 @@ export default function WhatsappPopup() {
 
       {/* البوب اب فوق الزر العائم */}
       {open && (
-        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-4 flex flex-col items-center gap-3 w-64">
+        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-3 flex flex-col items-center gap-2 w-60">
+
           {/* العنوان */}
           <h3 className="text-lg font-semibold text-gray-800">مركز المصباح</h3>
 
