@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -216,71 +215,71 @@ function CartButton() {
       </button>
 
       {open && (
-  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 animate-fade-in">
-    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in">
-      <button
-        onClick={() => setOpen(false)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
-      >
-        ✕
-      </button>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in">
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
+            >
+              ✕
+            </button>
 
-      <h3 className="font-bold text-[#7b0b4c] mb-4 text-lg">{t("cart")}</h3>
+            <h3 className="font-bold text-[#7b0b4c] mb-4 text-lg">{t("cart")}</h3>
 
-      {cart.length === 0 ? (
-        <p className="text-sm text-gray-500">{t("cart")} فارغة.</p>
-      ) : (
-        <>
-          <ul className="space-y-2 mb-3 max-h-64 overflow-y-auto">
-            {cart.map((c) => (
-              <li
-                key={c.id}
-                className="flex items-center justify-between border-b pb-1 text-sm"
-              >
-                <div>
-                  <div className="font-medium">{c.title}</div>
-                  {c.category && (
-                    <div className="text-xs text-gray-500">{c.category}</div>
-                  )}
+            {cart.length === 0 ? (
+              <p className="text-sm text-gray-500">{t("cart")} فارغة.</p>
+            ) : (
+              <>
+                <ul className="space-y-2 mb-3 max-h-64 overflow-y-auto">
+                  {cart.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex items-center justify-between border-b pb-1 text-sm"
+                    >
+                      <div>
+                        <div className="font-medium">{c.title}</div>
+                        {c.category && (
+                          <div className="text-xs text-gray-500">{c.category}</div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#7b0b4c] font-semibold">
+                          {formatCurrency(c.price)}
+                        </span>
+                        <button
+                          onClick={() => handleRemove(c.id)}
+                          className="text-gray-400 hover:text-red-500 text-xs"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex justify-between text-sm font-medium mb-4">
+                  <span>الإجمالي:</span>
+                  <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#7b0b4c] font-semibold">
-                    {formatCurrency(c.price)}
-                  </span>
-                  <button
-                    onClick={() => handleRemove(c.id)}
-                    className="text-gray-400 hover:text-red-500 text-xs"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
 
-          <div className="flex justify-between text-sm font-medium mb-4">
-            <span>الإجمالي:</span>
-            <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
+                <button
+                  onClick={handleWhatsAppOrder}
+                  className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]"
+                >
+                  طلب عبر واتساب
+                </button>
+              </>
+            )}
           </div>
-
-          <button
-            onClick={handleWhatsAppOrder}
-            className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]"
-          >
-            طلب عبر واتساب
-          </button>
-        </>
+        </div>
       )}
     </div>
-  </div>
-)}
-
+  );
 }
 
- /* =======================
-    LangCurrency
+/* =======================
+   LangCurrency
 ======================= */
-
 function LangCurrency() {
   const { lang, setLang, currency, setCurrency } = useApp();
   const [currencyOpen, setCurrencyOpen] = useState(false);
