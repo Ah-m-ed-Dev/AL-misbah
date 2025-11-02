@@ -17,6 +17,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${cairo.className} bg-white text-gray-900`}>
         <AppProvider>{children}</AppProvider>
+<WhatsappBubble/>
       </body>
     </html>
   );
