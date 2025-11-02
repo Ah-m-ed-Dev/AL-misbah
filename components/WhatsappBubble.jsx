@@ -1,56 +1,52 @@
 "use client";
-import { useState } from "react";
-import { FaWhatsapp } from "react-icons/fa";
 
-export default function WhatsappPopup() {
-  const [open, setOpen] = useState(false);
+import { useEffect } from "react";
 
-  return (
-    <>
-      {/* زر واتساب العائم */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="fixed right-6 bottom-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg"
-      >
-        <FaWhatsapp className="w-6 h-6" />
-      </button>
+export default function WhatsappWidget() {
+  useEffect(() => {
+    // إنشاء العنصر script
+    const s = document.createElement("script");
+    s.type = "text/javascript";
+    s.async = true;
+    s.src =
+      "https://edna.io/wp-content/plugins/whatsapp-widget-generator/js/generator.js?96996";
 
-      {/* البوب اب فوق الزر العائم */}
-      {open && (
-        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-3 flex flex-col items-center gap-2 w-60">
+    const options = {
+      host: "https://edna.io",
+      enabled: true,
+      chatButtonSetting: {
+        backgroundColor: "#22c55e",
+        ctaText: "Contact us",
+        icon: "whatsapp",
+        position: "right",
+      },
+      brandSetting: {
+        backgroundColor: "#7b0b4c",
+        brandImg: "https://i.postimg.cc/c1fVxG4K/logo1.png",
+        brandName: "Al misbah Center",
+        brandSubTitle: "Learn to Lead",
+        ctaText: "Start Chat",
+        phoneNumber: "97472041794",
+        welcomeText: "مرحباً بك في مركز المصباح! ",
+      },
+    };
 
-          {/* العنوان */}
-          <h3 className="text-lg font-semibold text-gray-800">مركز المصباح</h3>
+    // عند تحميل السكريبت، ننشئ الويدجت
+    s.onload = () => {
+      if (typeof CreateWhatsappChatWidget !== "undefined") {
+        CreateWhatsappChatWidget(options);
+      }
+    };
 
-          {/* صف يحتوي على اللوجو وأيقونة واتساب */}
-          <div className="flex items-center gap-2">
-            <img
-              src="/logo1.png" // ضع مسار اللوجو الصحيح هنا
-              alt="Logo"
-              className="w-13 h-13 object-contain"
-            />
-            <FaWhatsapp className="w-10 h-10 text-green-500" />
-          </div>
+    document.body.appendChild(s);
 
-          {/* زر الدردشة */}
-          <a
-            href="https://wa.me/97472041794"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full font-semibold"
-          >
-            Chat on WhatsApp
-          </a>
+    // تنظيف عند إلغاء المكون
+    return () => {
+      s.remove();
+      const widget = document.getElementById("edna-whatsapp-widget");
+      if (widget) widget.remove();
+    };
+  }, []);
 
-          {/* زر الإغلاق */}
-          <button
-            onClick={() => setOpen(false)}
-            className="text-gray-500 hover:text-gray-700 text-sm mt-1"
-          >
-            Close
-          </button>
-        </div>
-      )}
-    </>
-  );
+  return null; // المكون ما يعرضش أي شيء بنفسه
 }
