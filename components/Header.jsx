@@ -120,20 +120,18 @@ export default function Header() {
   );
 }
 
-/* =======================
-   SearchButton
-======================= */
+/* =======================    SearchButton ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState(""); // تخزين النص المكتوب
+  const [query, setQuery] = useState("");
   const { lang } = useApp();
 
-  // تنفيذ عملية البحث
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!query.trim()) return alert(lang === "AR" ? "اكتب كلمة للبحث!" : "Type something to search!");
-    // مثال: الانتقال لصفحة نتائج البحث
-    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    if (!query.trim()) return;
+    alert(`${lang === "AR" ? "نتيجة البحث عن:" : "Search for:"} ${query}`);
+    setOpen(false);
+    setQuery("");
   };
 
   return (
@@ -179,6 +177,7 @@ function SearchButton() {
     </div>
   );
 }
+
 
 
 
