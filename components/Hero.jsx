@@ -44,7 +44,7 @@ export default function Hero() {
               placeholder="ابحث عن دورة..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
+              className="flex-1 px-4 py-3 rounded-2xl bg-white focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
             />
             <button
               type="submit"
