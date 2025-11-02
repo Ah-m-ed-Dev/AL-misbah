@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApp } from "../app/context/AppContext";
 import { createPortal } from "react-dom";
 
-/* =======================
-   GlobalAnimations
-======================= */
+/* =======================    GlobalAnimations ======================= */
 function GlobalAnimations() {
   useEffect(() => {
     const id = "header-anim-css";
@@ -25,9 +23,7 @@ function GlobalAnimations() {
   return null;
 }
 
-/* =======================
-   Header
-======================= */
+/* =======================    Header ======================= */
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
@@ -50,19 +46,18 @@ export default function Header() {
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-  <img
-    src="/logo1.png"           // ← ضع هنا مسار الصورة داخل مجلد public
-    alt="AL Misbah Logo"      // ← النص البديل للصورة (مهم لتحسين الوصول)
-    className="w-10 h-10 object-contain" // ← حجم الصورة وتناسبها
-  />
-  <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
-    مركز المصباح 
-  </span>
-</Link>
-
+            <img
+              src="/logo1.png"
+              alt="AL Misbah Logo"
+              className="w-10 h-10 object-contain"
+            />
+            <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
+              مركز المصباح
+            </span>
+          </Link>
 
           <div className="flex items-center gap-4">
-            <SearchButton />
+            <SearchButton /> {/* تم تعديل SearchButton */}
             <CartButton />
             <LangCurrency />
           </div>
@@ -129,14 +124,22 @@ function SearchButton() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
-    alert(`${lang === "AR" ? "نتيجة البحث عن:" : "Search for:"} ${query}`);
+
+    // تخزين كلمة البحث
+    localStorage.setItem("searchQuery", query);
+
+    // التمرير إلى سكشن الدورات
+    const coursesSection = document.getElementById("courses-section");
+    if (coursesSection) {
+      coursesSection.scrollIntoView({ behavior: "smooth" });
+    }
+
     setOpen(false);
     setQuery("");
   };
 
   return (
     <div className="relative">
-      {/* زر العدسة */}
       <button
         className="p-2 rounded-full hover:bg-gray-100"
         aria-label="بحث"
@@ -150,12 +153,11 @@ function SearchButton() {
         </svg>
       </button>
 
-      {/* صندوق البحث */}
       {open && (
         <form
           onSubmit={handleSearch}
-          className={`absolute top-12 left-1/2 -translate-x-1/2 
-            bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in`}
+          className="absolute top-12 left-1/2 -translate-x-1/2
+                     bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in"
         >
           <input
             type="text"
@@ -164,8 +166,6 @@ function SearchButton() {
             placeholder={lang === "AR" ? "ابحث هنا..." : "Search..."}
             className="w-80 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
           />
-
-          {/* ✅ زر البحث */}
           <button
             type="submit"
             className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]"
@@ -177,7 +177,6 @@ function SearchButton() {
     </div>
   );
 }
-
 
 
 
