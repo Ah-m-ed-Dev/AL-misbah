@@ -156,16 +156,15 @@ function SearchButton() {
       {open && (
         <form
           onSubmit={handleSearch}
-          className={`absolute top-12 ${
-            lang === "AR" ? "left-0" : "right-0"
-          } bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in`}
+          className={`absolute top-12 left-1/2 -translate-x-1/2 
+            bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in`}
         >
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={lang === "AR" ? "ابحث هنا..." : "Search..."}
-            className="w-64 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
+            className="w-80 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
           />
 
           {/* ✅ زر البحث */}
@@ -180,6 +179,7 @@ function SearchButton() {
     </div>
   );
 }
+
 
 
 /* =======================    
