@@ -125,23 +125,20 @@ export default function Header() {
 ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState(""); // 🟢 تخزين النص المكتوب
+  const [query, setQuery] = useState(""); // تخزين النص المكتوب
   const { lang } = useApp();
 
-  // 🟢 دالة تُنفّذ عند البحث
+  // تنفيذ عملية البحث
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!query.trim()) return;
-
+    if (!query.trim()) return alert(lang === "AR" ? "اكتب كلمة للبحث!" : "Type something to search!");
     // مثال: الانتقال لصفحة نتائج البحث
     window.location.href = `/search?q=${encodeURIComponent(query)}`;
-
-    // أو تقدر تستبدلها بمنطق بحث داخل الموقع
-    // مثل: filterCourses(query)
   };
 
   return (
     <div className="relative">
+      {/* زر العدسة */}
       <button
         className="p-2 rounded-full hover:bg-gray-100"
         aria-label="بحث"
@@ -155,25 +152,35 @@ function SearchButton() {
         </svg>
       </button>
 
+      {/* صندوق البحث */}
       {open && (
         <form
           onSubmit={handleSearch}
           className={`absolute top-12 ${
             lang === "AR" ? "left-0" : "right-0"
-          } bg-white border rounded-lg shadow p-3 animate-fade-in`}
+          } bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in`}
         >
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)} // ✅ تحديث النص
+            onChange={(e) => setQuery(e.target.value)}
             placeholder={lang === "AR" ? "ابحث هنا..." : "Search..."}
             className="w-64 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
           />
+
+          {/* ✅ زر البحث */}
+          <button
+            type="submit"
+            className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]"
+          >
+            {lang === "AR" ? "بحث" : "Search"}
+          </button>
         </form>
       )}
     </div>
   );
 }
+
 
 /* =======================    
    CartButton 
