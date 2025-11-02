@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
 // إعداد Supabase
 const supabaseUrl = "https://kyazwzdyodysnmlqmljv.supabase.co";
@@ -50,6 +51,8 @@ export default function CoursesCarousel() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   // دالة إضافة الدورة للسلة
   const addToCart = (course) => {
@@ -58,15 +61,18 @@ export default function CoursesCarousel() {
       currentCart.push(course);
       localStorage.setItem("cart", JSON.stringify(currentCart));
       window.dispatchEvent(new Event("cartUpdated"));
-      alert("تمت إضافة الدورة للسلة!");
+      alert("✅تمت إضافة الدورة للسلة!");
     } else {
-      alert("الدورة موجودة بالفعل في السلة.");
+      alert("❕الدورة موجودة بالفعل في السلة.");
     }
   };
 
   // جلب البيانات من Supabase
   const fetchCourses = async () => {
-    const { data, error } = await supabase.from("courses").select("*").order("id", { ascending: true });
+    const { data, error } = await supabase
+      .from("courses")
+      .select("*")
+      .order("id", { ascending: true });
 
     if (error) {
       console.error("خطأ في جلب البيانات:", error);
@@ -91,10 +97,13 @@ export default function CoursesCarousel() {
   useEffect(() => {
     fetchCourses();
 
-    // الاستماع للتحديثات في الوقت الفعلي
     const channel = supabase
       .channel("courses-changes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "courses" }, () => fetchCourses())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "courses" },
+        () => fetchCourses()
+      )
       .subscribe();
 
     return () => {
@@ -102,13 +111,24 @@ export default function CoursesCarousel() {
     };
   }, []);
 
-  // الفلترة حسب الفئة
-  const filteredCourses =
-    activeTab === "الكل" ? courses : courses.filter((c) => c.category === activeTab);
+  // -------- الفلترة حسب الفئة والبحث --------
+  const filteredCourses = courses
+    .filter((c) => activeTab === "الكل" || c.category === activeTab)
+    .filter((c) => {
+      if (!searchQuery.trim()) return true;
+      const words = searchQuery.toLowerCase().trim().split(/\s+/);
+      return words.every((w) => c.title.toLowerCase().includes(w));
+    });
 
   const visibleCount = 4;
   const maxStart = Math.max(0, filteredCourses.length - visibleCount);
   const visible = filteredCourses.slice(start, start + visibleCount);
+
+  // -------- البحث مع التوجيه لصفحة الدورات --------
+  const handleSearch = (e) => {
+    e.preventDefault();
+    router.push(`/courses?search=${encodeURIComponent(searchQuery)}`);
+  };
 
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
@@ -116,6 +136,23 @@ export default function CoursesCarousel() {
         <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
           تصفّح <span className="text-[#7a1353]">الدورات</span> الأكثر طلبًا
         </h2>
+
+        {/* مربع البحث */}
+        <form onSubmit={handleSearch} className="mb-8 max-w-md mx-auto flex gap-2">
+          <input
+            type="text"
+            placeholder="ابحث عن دورة..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7a1353]"
+          />
+          <button
+            type="submit"
+            className="bg-[#7a1353] text-white px-4 py-2 rounded-lg hover:bg-[#5e0839]"
+          >
+            بحث
+          </button>
+        </form>
 
         {/* أزرار الفئات */}
         <div className="flex flex-wrap items-center gap-4 mb-10">
@@ -141,7 +178,7 @@ export default function CoursesCarousel() {
         {loading ? (
           <p className="text-center text-gray-500">جاري تحميل الدورات...</p>
         ) : filteredCourses.length === 0 ? (
-          <p className="text-center text-gray-500">لا توجد دورات في هذه الفئة.</p>
+          <p className="text-center text-gray-500">لا توجد دورات.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {visible.map((c) => (
