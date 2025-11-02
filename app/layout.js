@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Cairo } from "next/font/google";
 import { AppProvider } from "./context/AppContext";
+import WhatsappWidget from "@/components/WhatsappWidget";
 
 const cairo = Cairo({
   subsets: ["arabic"],
