@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { FaWhatsapp } from "react-icons/fa"; // استدعاء أيقونة واتساب من مكتبة react-icons
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function WhatsappPopup() {
   const [open, setOpen] = useState(false);
@@ -17,12 +17,21 @@ export default function WhatsappPopup() {
 
       {/* البوب اب فوق الزر العائم */}
       {open && (
-        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-4 flex flex-col items-center gap-3" style={{
-            backgroundImage: "url('/logo.png')", // ضع رابط الصورة هنا
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}>
-          <FaWhatsapp className="w-12 h-12 text-green-500" />
+        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-4 flex flex-col items-center gap-3 w-64">
+          {/* العنوان */}
+          <h3 className="text-lg font-semibold text-gray-800">مركز المصباح</h3>
+
+          {/* صف يحتوي على اللوجو وأيقونة واتساب */}
+          <div className="flex items-center gap-2">
+            <img
+              src="/logo.png" // ضع مسار اللوجو الصحيح هنا
+              alt="Logo"
+              className="w-10 h-10 object-contain"
+            />
+            <FaWhatsapp className="w-10 h-10 text-green-500" />
+          </div>
+
+          {/* زر الدردشة */}
           <a
             href="https://wa.me/97472041794"
             target="_blank"
@@ -31,6 +40,8 @@ export default function WhatsappPopup() {
           >
             Chat on WhatsApp
           </a>
+
+          {/* زر الإغلاق */}
           <button
             onClick={() => setOpen(false)}
             className="text-gray-500 hover:text-gray-700 text-sm mt-1"
