@@ -24,7 +24,7 @@ export default function WhatsappPopup() {
           {/* صف يحتوي على اللوجو وأيقونة واتساب */}
           <div className="flex items-center gap-2">
             <img
-              src="/logo.png" // ضع مسار اللوجو الصحيح هنا
+              src="/logo1.png" // ضع مسار اللوجو الصحيح هنا
               alt="Logo"
               className="w-13 h-13 object-contain"
             />
