@@ -17,7 +17,11 @@ export default function WhatsappPopup() {
 
       {/* البوب اب فوق الزر العائم */}
       {open && (
-        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-4 flex flex-col items-center gap-3">
+        <div className="fixed right-6 bottom-20 z-50 bg-white border rounded-xl shadow-xl p-4 flex flex-col items-center gap-3" style={{
+            backgroundImage: "url('/logo.png')", // ضع رابط الصورة هنا
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}>
           <FaWhatsapp className="w-12 h-12 text-green-500" />
           <a
             href="https://wa.me/97472041794"
