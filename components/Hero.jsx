@@ -27,23 +27,63 @@ export default function Hero() {
   );
 }
 
-function SearchBar() {
+/* =======================
+   SearchButton
+======================= */
+function SearchButton() {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState(""); // تخزين النص المكتوب
+  const { lang } = useApp();
+
+  // تنفيذ عملية البحث
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!query.trim()) return alert(lang === "AR" ? "اكتب كلمة للبحث!" : "Type something to search!");
+    // مثال: الانتقال لصفحة نتائج البحث
+    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+  };
+
   return (
-    <div className="mt-6 w-full max-w-md">
-      <div className="relative">
-        <input
-          placeholder="..ابحث عن"
-          className="w-full rounded-2xl bg-white/95 shadow-lg focus:outline-none focus:ring-4 focus:ring-[#7b0b4c]/40 px-14 py-4 text-lg placeholder-gray-400"
-        />
-        <div className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#7b0b4c]">
-          <svg viewBox="0 0 24 24" className="w-6 h-6">
-            <path
-              fill="currentColor"
-              d="M10 2a8 8 0 1 1 5.293 13.707l4 4-1.414 1.414-4-4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"
-            />
-          </svg>
-        </div>
-      </div>
+    <div className="relative">
+      {/* زر العدسة */}
+      <button
+        className="p-2 rounded-full hover:bg-gray-100"
+        aria-label="بحث"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <svg viewBox="0 0 24 24" className="w-6 h-6 text-gray-600">
+          <path
+            fill="currentColor"
+            d="M10 2a8 8 0 1 1 5.293 13.707l4 4-1.414 1.414-4-4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"
+          />
+        </svg>
+      </button>
+
+      {/* صندوق البحث */}
+      {open && (
+        <form
+          onSubmit={handleSearch}
+          className={`absolute top-12 ${
+            lang === "AR" ? "left-0" : "right-0"
+          } bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in`}
+        >
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={lang === "AR" ? "ابحث هنا..." : "Search..."}
+            className="w-64 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
+          />
+
+          {/* ✅ زر البحث */}
+          <button
+            type="submit"
+            className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]"
+          >
+            {lang === "AR" ? "بحث" : "Search"}
+          </button>
+        </form>
+      )}
     </div>
   );
 }
