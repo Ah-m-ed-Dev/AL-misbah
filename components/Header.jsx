@@ -50,13 +50,16 @@ export default function Header() {
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-[#7b0b4c]">
-              <path d="M12 2l9 5-9 5-9-5 9-5Zm0 7l9 5-9 5-9-5 9-5Z" />
-            </svg>
-            <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
-              {t("courses")}
-            </span>
-          </Link>
+  <img
+    src="/logo.png"           // ← ضع هنا مسار الصورة داخل مجلد public
+    alt="AL Misbah Logo"      // ← النص البديل للصورة (مهم لتحسين الوصول)
+    className="w-10 h-10 object-contain" // ← حجم الصورة وتناسبها
+  />
+  <span className="hidden sm:block font-extrabold tracking-wide text-[#7b0b4c]">
+    {t("courses")}
+  </span>
+</Link>
+
 
           <div className="flex items-center gap-4">
             <SearchButton />
