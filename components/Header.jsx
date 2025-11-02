@@ -51,7 +51,7 @@ export default function Header() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
   <img
-    src="/logo.png"           // ← ضع هنا مسار الصورة داخل مجلد public
+    src="/logo1.png"           // ← ضع هنا مسار الصورة داخل مجلد public
     alt="AL Misbah Logo"      // ← النص البديل للصورة (مهم لتحسين الوصول)
     className="w-10 h-10 object-contain" // ← حجم الصورة وتناسبها
   />
