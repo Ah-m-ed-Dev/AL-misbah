@@ -26,7 +26,7 @@ export default function WhatsappPopup() {
             <img
               src="/logo.png" // ضع مسار اللوجو الصحيح هنا
               alt="Logo"
-              className="w-10 h-10 object-contain"
+              className="w-13 h-13 object-contain"
             />
             <FaWhatsapp className="w-10 h-10 text-green-500" />
           </div>
