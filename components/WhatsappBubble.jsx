@@ -1,15 +1,13 @@
 "use client";
 import { useEffect } from "react";
 
-export default function WhatsappWidget() {
+export default function WhatsappBubble() {
   useEffect(() => {
-    // لو الويدجت موجودة بالفعل، لا تعيد تحميلها
+    // تأكد من عدم تكرار تحميل الويدجت
     if (window.__ednaLoaded) return;
-
-    // ضع علامة أنه تم التحميل
     window.__ednaLoaded = true;
 
-    // إنشاء عنصر السكريبت
+    // إنشاء السكربت الخارجي
     const s = document.createElement("script");
     s.type = "text/javascript";
     s.async = true;
@@ -36,24 +34,32 @@ export default function WhatsappWidget() {
       },
     };
 
-    // تشغيل الويدجت عند تحميل السكريبت
     s.onload = () => {
       if (typeof CreateWhatsappChatWidget !== "undefined") {
         CreateWhatsappChatWidget(options);
 
-        // 👇 كود CSS صغير يثبّت الاتجاه من اليسار لليمين
-        const style = document.createElement("style");
-        style.innerHTML = `
-          .whatsapp-chat-widget, 
-          .whatsapp-button,
-          [id*="whatsapp-chat-widget"],
-          [class*="whatsapp"]
-          {
-            direction: ltr !important;
-            text-align: left !important;
-          }
-        `;
-        document.head.appendChild(style);
+        // 👇 نتحقق ونعدل الاتجاه داخل iframe
+        const fixDirection = () => {
+          const iframes = document.querySelectorAll("iframe");
+          iframes.forEach((iframe) => {
+            try {
+              const doc =
+                iframe.contentDocument || iframe.contentWindow.document;
+              if (doc && doc.body) {
+                // تثبيت الاتجاه من اليسار لليمين
+                doc.body.dir = "ltr";
+                doc.body.style.direction = "ltr";
+                doc.body.style.textAlign = "left";
+              }
+            } catch (e) {
+              // تجاهل الأخطاء في حالة cross-origin
+            }
+          });
+        };
+
+        // نحاول عدة مرات لأن الويدجت أحياناً تتأخر في التحميل
+        const interval = setInterval(fixDirection, 1000);
+        setTimeout(() => clearInterval(interval), 10000);
       }
     };
 
