@@ -1,7 +1,6 @@
 import "./globals.css";
 import { Cairo } from "next/font/google";
 import { AppProvider } from "./context/AppContext";
-import WhatsappBubble from "@/components/WhatsappBubble";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -17,7 +16,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${cairo.className} bg-white text-gray-900`}>
         <AppProvider>{children}</AppProvider>
-<WhatsappBubble/>
       </body>
     </html>
   );
