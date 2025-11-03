@@ -30,7 +30,7 @@ function GlobalAnimations() {
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
-  const { lang, t } = useApp();
+  const { t } = useApp(); // اللغة الآن ثابتة عربية
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -49,7 +49,6 @@ export default function Header() {
       {/* Top Bar */}
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <img
@@ -129,7 +128,7 @@ export default function Header() {
 function SearchButton() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { lang } = useApp();
+  const lang = "AR"; // إجبار اللغة عربية
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -164,14 +163,14 @@ function SearchButton() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={lang === "AR" ? "ابحث هنا..." : "Search..."}
+            placeholder="ابحث هنا..."
             className="w-80 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
           />
           <button
             type="submit"
             className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]"
           >
-            {lang === "AR" ? "بحث" : "Search"}
+            بحث
           </button>
         </form>
       )}
@@ -184,11 +183,10 @@ function CartButton() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const { formatCurrency, t } = useApp();
-
+  
   useEffect(() => {
     const loadCart = () =>
       setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
-
     loadCart();
     window.addEventListener("storage", loadCart);
     window.addEventListener("cartUpdated", loadCart);
@@ -307,8 +305,8 @@ function CartButton() {
 
 /* ======================= LangCurrency (عرض فقط بالعربية) ======================= */
 function LangCurrency() {
-  const lang = "AR"; // إجبار اللغة لتكون عربية
-  const currency = "USD"; // يمكنك تغيير العملة الافتراضية إذا أحببت
+  const lang = "AR"; // اللغة عربية
+  const currency = "USD"; // العملة افتراضية
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
@@ -341,7 +339,7 @@ function LangCurrency() {
             {Object.entries(currencies).map(([key, val]) => (
               <button
                 key={key}
-                onClick={(e) => e.preventDefault()} // منع أي تأثير فعلي
+                onClick={(e) => e.preventDefault()} // عرض فقط
                 className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2 cursor-default"
               >
                 <span>{val.flag}</span> {val.label}
@@ -368,7 +366,7 @@ function LangCurrency() {
             {Object.entries(languages).map(([key, val]) => (
               <button
                 key={key}
-                onClick={(e) => e.preventDefault()} // منع أي تأثير فعلي
+                onClick={(e) => e.preventDefault()} // عرض فقط
                 className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2 cursor-default"
               >
                 <span>{val.flag}</span> {val.label}
@@ -380,8 +378,6 @@ function LangCurrency() {
     </div>
   );
 }
-
-
 
 /* ======================= LoginModal ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
