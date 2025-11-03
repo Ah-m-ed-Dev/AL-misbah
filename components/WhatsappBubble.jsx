@@ -1,13 +1,57 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function WhatsappBubble() {
+  const containerRef = useRef(null);
+
   useEffect(() => {
-    // تأكد من عدم تكرار تحميل الويدجت
     if (window.__ednaLoaded) return;
     window.__ednaLoaded = true;
 
-    // إنشاء السكربت الخارجي
+    // إنشاء Shadow DOM
+    const host = document.createElement("div");
+    containerRef.current = host;
+    document.body.appendChild(host);
+
+    const shadow = host.attachShadow({ mode: "open" });
+
+    // إضافة عنصر الويدجت داخل الـ Shadow DOM
+    const widgetWrapper = document.createElement("div");
+    widgetWrapper.setAttribute(
+      "style",
+      `
+      all: initial;
+      direction: ltr;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+    `
+    );
+    shadow.appendChild(widgetWrapper);
+
+    // إضافة زر × داخل الـ Shadow DOM
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "×";
+    closeBtn.setAttribute(
+      "style",
+      `
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    `
+    );
+    widgetWrapper.appendChild(closeBtn);
+
+    closeBtn.addEventListener("click", () => {
+      widgetWrapper.style.display = "none";
+    });
+
+    // تحميل سكربت Edna داخل الـ Shadow DOM
     const s = document.createElement("script");
     s.type = "text/javascript";
     s.async = true;
@@ -38,63 +82,42 @@ export default function WhatsappBubble() {
       if (typeof CreateWhatsappChatWidget !== "undefined") {
         CreateWhatsappChatWidget(options);
 
-        // 👇 نتحقق ونعدل الاتجاه داخل iframe
+        // تعديل اتجاه iframe داخل الويدجت
         const fixDirection = () => {
-          const iframes = document.querySelectorAll("iframe");
+          const iframes = widgetWrapper.querySelectorAll("iframe");
           iframes.forEach((iframe) => {
             try {
               const doc =
                 iframe.contentDocument || iframe.contentWindow.document;
               if (doc && doc.body) {
-                // تثبيت الاتجاه من اليسار لليمين
                 doc.body.dir = "ltr";
                 doc.body.style.direction = "ltr";
                 doc.body.style.textAlign = "left";
               }
-            } catch (e) {
-              // تجاهل الأخطاء في حالة cross-origin
-            }
+            } catch (e) {}
           });
         };
 
-        // نحاول عدة مرات لأن الويدجت أحياناً تتأخر في التحميل
         const interval = setInterval(fixDirection, 1000);
         setTimeout(() => clearInterval(interval), 10000);
-
-        // 👇 إخفاء الويدجت عند الضغط في أي مكان خارجها
-        const hideWidgetOnClick = (e) => {
-          const widgetButton = document.querySelector(
-            ".whatsapp-widget-button"
-          );
-          const widgetBox = document.querySelector(".whatsapp-chat-box");
-
-          // لو العنصرين موجودين
-          if (widgetBox && !widgetBox.contains(e.target)) {
-            // نخفي المحادثة فقط إذا كانت ظاهرة
-            if (widgetBox.style.display !== "none") {
-              widgetBox.style.display = "none";
-            }
-          }
-
-          // إعادة إظهارها عند الضغط على الزر
-          if (widgetButton && widgetButton.contains(e.target)) {
-            const box = document.querySelector(".whatsapp-chat-box");
-            if (box) {
-              box.style.display =
-                box.style.display === "none" ? "block" : "none";
-            }
-          }
-        };
-
-        document.addEventListener("click", hideWidgetOnClick);
       }
     };
 
-    document.body.appendChild(s);
+    widgetWrapper.appendChild(s);
 
-    // تنظيف عند إزالة المكون
+    // إخفاء البوب أب عند الضغط خارجها
+    const handleClickOutside = (e) => {
+      if (!widgetWrapper.contains(e.target)) {
+        widgetWrapper.style.display = "none";
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
-      document.removeEventListener("click", hideWidgetOnClick);
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (containerRef.current) {
+        containerRef.current.remove();
+      }
     };
   }, []);
 
