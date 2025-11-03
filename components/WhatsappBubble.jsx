@@ -60,10 +60,42 @@ export default function WhatsappBubble() {
         // نحاول عدة مرات لأن الويدجت أحياناً تتأخر في التحميل
         const interval = setInterval(fixDirection, 1000);
         setTimeout(() => clearInterval(interval), 10000);
+
+        // 👇 إخفاء الويدجت عند الضغط في أي مكان خارجها
+        const hideWidgetOnClick = (e) => {
+          const widgetButton = document.querySelector(
+            ".whatsapp-widget-button"
+          );
+          const widgetBox = document.querySelector(".whatsapp-chat-box");
+
+          // لو العنصرين موجودين
+          if (widgetBox && !widgetBox.contains(e.target)) {
+            // نخفي المحادثة فقط إذا كانت ظاهرة
+            if (widgetBox.style.display !== "none") {
+              widgetBox.style.display = "none";
+            }
+          }
+
+          // إعادة إظهارها عند الضغط على الزر
+          if (widgetButton && widgetButton.contains(e.target)) {
+            const box = document.querySelector(".whatsapp-chat-box");
+            if (box) {
+              box.style.display =
+                box.style.display === "none" ? "block" : "none";
+            }
+          }
+        };
+
+        document.addEventListener("click", hideWidgetOnClick);
       }
     };
 
     document.body.appendChild(s);
+
+    // تنظيف عند إزالة المكون
+    return () => {
+      document.removeEventListener("click", hideWidgetOnClick);
+    };
   }, []);
 
   return null;
