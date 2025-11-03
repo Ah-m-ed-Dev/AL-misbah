@@ -305,15 +305,15 @@ function CartButton() {
   );
 }
 
-/* ======================= LangCurrency ======================= */
+/* ======================= LangCurrency (عرض فقط) ======================= */
 function LangCurrency() {
-  const { lang, setLang, currency, setCurrency } = useApp();
+  const { lang, currency } = useApp(); // إزالة setLang و setCurrency لأننا لن نغيرهما
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
   const currencies = {
-    USD: { label: lang === "AR" ? "دولار" : "Dollar", flag: "🇺🇸" },
-    QAR: { label: lang === "AR" ? "ريال" : "Qatari Riyal", flag: "🇶🇦" },
+    USD: { label: "Dollar", flag: "🇺🇸" },
+    QAR: { label: "Riyal", flag: "🇶🇦" },
   };
 
   const languages = {
@@ -323,7 +323,7 @@ function LangCurrency() {
 
   return (
     <div className="flex items-center gap-3 text-sm" dir="ltr">
-      {/* Currencies */}
+      {/* العملات */}
       <div className="relative">
         <button
           className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
@@ -340,11 +340,8 @@ function LangCurrency() {
             {Object.entries(currencies).map(([key, val]) => (
               <button
                 key={key}
-                onClick={() => {
-                  setCurrency(key);
-                  setCurrencyOpen(false);
-                }}
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+                onClick={(e) => e.preventDefault()} // منع أي تأثير فعلي
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2 cursor-default"
               >
                 <span>{val.flag}</span> {val.label}
               </button>
@@ -353,7 +350,7 @@ function LangCurrency() {
         )}
       </div>
 
-      {/* Languages */}
+      {/* اللغات */}
       <div className="relative">
         <button
           className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
@@ -370,11 +367,8 @@ function LangCurrency() {
             {Object.entries(languages).map(([key, val]) => (
               <button
                 key={key}
-                onClick={() => {
-                  setLang(key);
-                  setLangOpen(false);
-                }}
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
+                onClick={(e) => e.preventDefault()} // منع أي تأثير فعلي
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2 cursor-default"
               >
                 <span>{val.flag}</span> {val.label}
               </button>
@@ -385,6 +379,7 @@ function LangCurrency() {
     </div>
   );
 }
+
 
 /* ======================= LoginModal ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
