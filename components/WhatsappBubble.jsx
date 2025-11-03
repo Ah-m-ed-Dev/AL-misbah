@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect } from "react";
 
 export default function WhatsappWidget() {
@@ -41,6 +40,20 @@ export default function WhatsappWidget() {
     s.onload = () => {
       if (typeof CreateWhatsappChatWidget !== "undefined") {
         CreateWhatsappChatWidget(options);
+
+        // 👇 كود CSS صغير يثبّت الاتجاه من اليسار لليمين
+        const style = document.createElement("style");
+        style.innerHTML = `
+          .whatsapp-chat-widget, 
+          .whatsapp-button,
+          [id*="whatsapp-chat-widget"],
+          [class*="whatsapp"]
+          {
+            direction: ltr !important;
+            text-align: left !important;
+          }
+        `;
+        document.head.appendChild(style);
       }
     };
 
