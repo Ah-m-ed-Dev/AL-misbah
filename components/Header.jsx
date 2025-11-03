@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useApp } from "../app/context/AppContext";
 import { createPortal } from "react-dom";
 
-/* =======================    GlobalAnimations ======================= */
+/* =======================
+   GlobalAnimations
+======================= */
 function GlobalAnimations() {
   useEffect(() => {
     const id = "header-anim-css";
@@ -23,7 +25,9 @@ function GlobalAnimations() {
   return null;
 }
 
-/* =======================    Header ======================= */
+/* =======================
+   Header
+======================= */
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
@@ -40,11 +44,13 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40" dir={lang === "AR" ? "rtl" : "ltr"}>
+    <header className="sticky top-0 z-40" dir="ltr">
       <GlobalAnimations />
 
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+          {/* شعار الموقع */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <img
               src="/logo1.png"
@@ -56,11 +62,19 @@ export default function Header() {
             </span>
           </Link>
 
+          {/* أزرار التحكم */}
           <div className="flex items-center gap-4">
-            <SearchButton /> {/* تم تعديل SearchButton */}
+
+            <SearchButton />
             <CartButton />
-            <LangCurrency />
+
+            {/* LangCurrency - اتجاه ثابت LTR */}
+            <div dir="ltr">
+              <LangCurrency />
+            </div>
+
           </div>
+
         </div>
       </div>
 
@@ -115,7 +129,9 @@ export default function Header() {
   );
 }
 
-/* =======================    SearchButton ======================= */
+/* =======================
+   SearchButton
+======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -124,16 +140,11 @@ function SearchButton() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
-
-    // تخزين كلمة البحث
     localStorage.setItem("searchQuery", query);
-
-    // التمرير إلى سكشن الدورات
     const coursesSection = document.getElementById("courses-section");
     if (coursesSection) {
       coursesSection.scrollIntoView({ behavior: "smooth" });
     }
-
     setOpen(false);
     setQuery("");
   };
@@ -157,7 +168,7 @@ function SearchButton() {
         <form
           onSubmit={handleSearch}
           className="absolute top-12 left-1/2 -translate-x-1/2
-                     bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in"
+          bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in"
         >
           <input
             type="text"
@@ -178,19 +189,17 @@ function SearchButton() {
   );
 }
 
-
-
-/* =======================    
-   CartButton 
+/* =======================
+   CartButton
 ======================= */
-
 function CartButton() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const { formatCurrency, t } = useApp();
 
   useEffect(() => {
-    const loadCart = () => setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
+    const loadCart = () =>
+      setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
     loadCart();
     window.addEventListener("storage", loadCart);
     window.addEventListener("cartUpdated", loadCart);
@@ -202,7 +211,8 @@ function CartButton() {
 
   const totalCount = cart.length;
   const totalPrice = cart.reduce(
-    (sum, c) => sum + (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0),
+    (sum, c) =>
+      sum + (parseFloat((c.price || "0").toString().replace(/[^\d.]/g, "")) || 0),
     0
   );
 
@@ -217,7 +227,9 @@ function CartButton() {
     if (!cart.length) return alert(t("cart") + " فارغة!");
     const message =
       "مرحباً! أود طلب الدورات التالية:\n\n" +
-      cart.map((c, i) => `${i + 1}- ${c.title} (${c.price || "0"})`).join("\n") +
+      cart
+        .map((c, i) => `${i + 1}- ${c.title} (${c.price || "0"})`)
+        .join("\n") +
       `\n\n${t("cart")}: ${formatCurrency(totalPrice)}`;
     window.open(
       "https://wa.me/+97472041794?text=" + encodeURIComponent(message),
@@ -225,7 +237,6 @@ function CartButton() {
     );
   };
 
-  // محتوى المودال
   const modal = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in">
@@ -301,13 +312,10 @@ function CartButton() {
         )}
       </button>
 
-      {open && typeof window !== "undefined" &&
-        createPortal(modal, document.body)}
+      {open && typeof window !== "undefined" && createPortal(modal, document.body)}
     </div>
   );
 }
-
-
 
 /* =======================
    LangCurrency
@@ -328,7 +336,7 @@ function LangCurrency() {
   };
 
   return (
-    <div className="flex items-center gap-3 text-sm" dir={lang === "AR" ? "rtl" : "ltr"}>
+    <div className="flex items-center gap-3 text-sm" dir="ltr">
       {/* العملات */}
       <div className="relative">
         <button
@@ -408,32 +416,15 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
     e.preventDefault();
 
     const users = [
-      {
-        name: "المدير العام",
-        email: "alfathhamid599@gmail.com",
-        password: "123456",
-        role: "general_manager",
-      },
-      {
-        name: "المدير التنفيذي",
-        email: "fayhaalfatihhamida@gmail.com",
-        password: "123456",
-        role: "executive",
-      },
-      {
-        name: "مدير الموارد البشرية",
-        email: "atag4052@gmail.com",
-        password: "123456",
-        role: "hr",
-      },
+      { name: "المدير العام", email: "alfathhamid599@gmail.com", password: "123456", role: "general_manager" },
+      { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456", role: "executive" },
+      { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456", role: "hr" },
     ];
 
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
-    const foundUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
+    const foundUser = users.find(u => u.email === email && u.password === password);
 
     if (foundUser) {
       localStorage.setItem("user", JSON.stringify(foundUser));
@@ -460,9 +451,11 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
         >
           ✕
         </button>
+
         <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
           {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm mb-1">البريد الإلكتروني</label>
