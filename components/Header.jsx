@@ -305,9 +305,10 @@ function CartButton() {
   );
 }
 
-/* ======================= LangCurrency (عرض فقط) ======================= */
+/* ======================= LangCurrency (عرض فقط بالعربية) ======================= */
 function LangCurrency() {
-  const { lang, currency } = useApp(); // إزالة setLang و setCurrency لأننا لن نغيرهما
+  const lang = "AR"; // إجبار اللغة لتكون عربية
+  const currency = "USD"; // يمكنك تغيير العملة الافتراضية إذا أحببت
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
@@ -379,6 +380,7 @@ function LangCurrency() {
     </div>
   );
 }
+
 
 
 /* ======================= LoginModal ======================= */
