@@ -303,7 +303,7 @@ function CartButton() {
   );
 }
 /* الترجمة */
-export default function LangCurrency() {
+ function LangCurrency() {
   const { lang, setLang, currency, setCurrency, toggleLang } = useApp();
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
