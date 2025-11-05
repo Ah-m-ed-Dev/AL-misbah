@@ -1,8 +1,6 @@
 "use client";
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-// القاموس اللغوي
 const DICT = {
   AR: {
     login: "تسجيل الدخول",
@@ -42,6 +40,7 @@ export function AppProvider({ children }) {
   const [lang, setLang] = useState("AR");
   const [currency, setCurrency] = useState("QAR");
 
+  // تحميل القيم من localStorage
   useEffect(() => {
     const sLang = localStorage.getItem("app_lang");
     const sCur = localStorage.getItem("app_currency");
@@ -49,6 +48,7 @@ export function AppProvider({ children }) {
     if (sCur) setCurrency(sCur);
   }, []);
 
+  // حفظ القيم وتحديث الاتجاه
   useEffect(() => {
     localStorage.setItem("app_lang", lang);
     localStorage.setItem("app_currency", currency);
@@ -56,29 +56,70 @@ export function AppProvider({ children }) {
     document.documentElement.dir = lang === "EN" ? "ltr" : "rtl";
   }, [lang, currency]);
 
-  const t = (key) => (DICT[lang] && DICT[lang][key]) || key;
+  // تحميل Google Translate
+  useEffect(() => {
+    if (window.googleTranslateElementInit) return;
+    window.googleTranslateElementInit = function () {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          includedLanguages: "ar,en",
+          autoDisplay: false,
+        },
+        "google_translate_element"
+      );
+    };
+    const script = document.createElement("script");
+    script.src =
+      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    document.body.appendChild(script);
+  }, []);
 
-  const formatCurrency = (value) => {
-    if (value == null || value === "") return "";
-    const num = typeof value === "number" ? value : parseFloat(value.toString().replace(/[^\d.-]/g, "")) || 0;
-    if (currency === "QAR") {
-      return new Intl.NumberFormat(lang === "EN" ? "en-QA" : "ar-QA", {
-        style: "currency",
-        currency: "QAR",
-        maximumFractionDigits: 0,
-      }).format(num);
-    } else {
-      return new Intl.NumberFormat(lang === "EN" ? "en-US" : "ar-SA", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-      }).format(num);
+  // تبديل اللغة
+  const toggleLang = () => {
+    const newLang = lang === "AR" ? "EN" : "AR";
+    setLang(newLang);
+
+    const select = document.querySelector(".goog-te-combo");
+    if (select) {
+      select.value = newLang === "AR" ? "ar" : "en";
+      select.dispatchEvent(new Event("change"));
     }
   };
 
+  // ترجمة المفاتيح
+  const t = (key) => DICT[lang]?.[key] || key;
+
+  // تنسيق العملة
+  const formatCurrency = (value) => {
+    if (value == null || value === "") return "";
+    const num =
+      typeof value === "number"
+        ? value
+        : parseFloat(value.toString().replace(/[^\d.-]/g, "")) || 0;
+
+    return new Intl.NumberFormat(lang === "EN" ? "en-US" : "ar-SA", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(num);
+  };
+
   return (
-    <AppContext.Provider value={{ lang, setLang, currency, setCurrency, t, formatCurrency }}>
+    <AppContext.Provider
+      value={{
+        lang,
+        setLang,
+        toggleLang,
+        currency,
+        setCurrency,
+        t,
+        formatCurrency,
+      }}
+    >
       {children}
+      {/* عنصر ترجمة Google (مخفي) */}
+      <div id="google_translate_element" style={{ display: "none" }}></div>
     </AppContext.Provider>
   );
 }
