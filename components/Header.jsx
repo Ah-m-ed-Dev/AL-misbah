@@ -302,11 +302,9 @@ function CartButton() {
     </div>
   );
 }
-
-/* ======================= LangCurrency (عرض فقط بالعربية) ======================= */
-function LangCurrency() {
-  const lang = "AR"; // اللغة عربية
-  const currency = "USD"; // العملة افتراضية
+/* الترجمة */
+export default function LangCurrency() {
+  const { lang, setLang, currency, setCurrency, toggleLang } = useApp();
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
@@ -318,6 +316,17 @@ function LangCurrency() {
   const languages = {
     AR: { label: "العربية", flag: "🇸🇦" },
     EN: { label: "English", flag: "🇬🇧" },
+  };
+
+  const handleCurrencyChange = (key) => {
+    setCurrency(key);
+    setCurrencyOpen(false);
+  };
+
+  const handleLanguageChange = (key) => {
+    setLang(key);
+    toggleLang(); // ← هذا يستدعي ترجمة Google + تغيير الاتجاه
+    setLangOpen(false);
   };
 
   return (
@@ -339,8 +348,8 @@ function LangCurrency() {
             {Object.entries(currencies).map(([key, val]) => (
               <button
                 key={key}
-                onClick={(e) => e.preventDefault()} // عرض فقط
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2 cursor-default"
+                onClick={() => handleCurrencyChange(key)}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
                 <span>{val.flag}</span> {val.label}
               </button>
@@ -366,8 +375,8 @@ function LangCurrency() {
             {Object.entries(languages).map(([key, val]) => (
               <button
                 key={key}
-                onClick={(e) => e.preventDefault()} // عرض فقط
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2 cursor-default"
+                onClick={() => handleLanguageChange(key)}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
               >
                 <span>{val.flag}</span> {val.label}
               </button>
@@ -378,6 +387,7 @@ function LangCurrency() {
     </div>
   );
 }
+
 
 /* ======================= LoginModal ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
