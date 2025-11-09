@@ -27,5 +27,9 @@ export default function OnlineTrainingPage() {
         </p>
       </div>
     </div>
+      {/* الفاصل السفلي */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-[#5c0f0f] text-sm">
+        © {new Date().getFullYear()} مركز المصباح للتدريب المهني — جميع الحقوق محفوظة.
+      </div>
   );
 }
