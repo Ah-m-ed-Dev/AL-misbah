@@ -179,11 +179,11 @@ export default function Footer() {
 
            <p className="text-sm text-[#3a0f24]">
   © {new Date().getFullYear()} مركز المصباح للتدريب المهني. جميع الحقوق محفوظة.
-  شركة<a 
+   شركة<a 
     href="https://www.facebook.com/profile.php?id=61578234835457" 
     target="_blank" 
     rel="noopener noreferrer"
-    className="text-blue-600 hover:underline"
+    className="text-[#7a1353] hover:underline"
   >
      DevSeed
   </a> للتطوير البرمجي
