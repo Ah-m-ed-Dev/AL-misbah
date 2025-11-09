@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useApp } from "../app/context/AppContext";
 import { createPortal } from "react-dom";
+import { ShoppingCart, Search, Globe, DollarSign } from "lucide-react";
 
 /* ======================= GlobalAnimations ======================= */
 function GlobalAnimations() {
   useEffect(() => {
     const id = "header-anim-css";
     if (document.getElementById(id)) return;
-
     const style = document.createElement("style");
     style.id = id;
     style.innerHTML = `
@@ -22,7 +21,6 @@ function GlobalAnimations() {
     `;
     document.head.appendChild(style);
   }, []);
-
   return null;
 }
 
@@ -30,7 +28,6 @@ function GlobalAnimations() {
 export default function Header() {
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
-  const { t } = useApp(); // اللغة الآن ثابتة عربية
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -65,9 +62,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <SearchButton />
             <CartButton />
-            <div dir="ltr">
-              <LangCurrency />
-            </div>
+            <LangCurrencyFixed />
           </div>
         </div>
       </div>
@@ -76,7 +71,7 @@ export default function Header() {
       <div className="absolute top-16 left-0 w-full bg-white/10 backdrop-blur-sm z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
           <button className="flex items-center gap-2 text-gray-800 hover:text-[#7b0b4c]">
-            <span className="text-sm">{t("topics")}</span>
+            <span className="text-sm">المواضيع</span>
           </button>
 
           <div className="flex items-center gap-3">
@@ -86,25 +81,25 @@ export default function Header() {
                   onClick={() => setAuthMode("login")}
                   className="px-4 py-1.5 rounded-lg border border-[#7b0b4c] text-[#7b0b4c] bg-white/70 backdrop-blur-sm hover:bg-[#7b0b4c] hover:text-white text-sm"
                 >
-                  {t("login")}
+                  تسجيل الدخول
                 </button>
                 <button
                   onClick={() => setAuthMode("register")}
                   className="px-4 py-1.5 rounded-lg bg-[#7b0b4c] text-white hover:bg-[#5e0839] text-sm"
                 >
-                  {t("newUser")}
+                  مستخدم جديد
                 </button>
               </>
             ) : (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold text-[#7b0b4c]">
-                  {t("welcome")}، {user.name}
+                  مرحباً، {user.name}
                 </span>
                 <button
                   onClick={handleLogout}
                   className="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm"
                 >
-                  {t("logout")}
+                  تسجيل خروج
                 </button>
               </div>
             )}
@@ -128,7 +123,6 @@ export default function Header() {
 function SearchButton() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const lang = "AR"; // إجبار اللغة عربية
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -151,7 +145,7 @@ function SearchButton() {
         aria-label="بحث"
         onClick={() => setOpen((v) => !v)}
       >
-        🔍
+        <Search className="w-5 h-5 text-gray-700" />
       </button>
 
       {open && (
@@ -182,8 +176,7 @@ function SearchButton() {
 function CartButton() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
-  const { formatCurrency, t } = useApp();
-  
+
   useEffect(() => {
     const loadCart = () =>
       setCart(JSON.parse(localStorage.getItem("cart") || "[]"));
@@ -212,11 +205,11 @@ function CartButton() {
   };
 
   const handleWhatsAppOrder = () => {
-    if (!cart.length) return alert(t("cart") + " فارغة!");
+    if (!cart.length) return alert("السلة فارغة!");
     const message =
       "مرحباً! أود طلب الدورات التالية:\n\n" +
       cart.map((c, i) => `${i + 1}- ${c.title} (${c.price || "0"})`).join("\n") +
-      `\n\n${t("cart")}: ${formatCurrency(totalPrice)}`;
+      `\n\nالسلة الإجمالية: ${totalPrice}`;
     window.open(
       "https://wa.me/+97472041794?text=" + encodeURIComponent(message),
       "_blank"
@@ -233,10 +226,9 @@ function CartButton() {
           ✕
         </button>
 
-        <h3 className="font-bold text-[#7b0b4c] mb-4 text-lg">{t("cart")}</h3>
-
+        <h3 className="font-bold text-[#7b0b4c] mb-4 text-lg">السلة</h3>
         {cart.length === 0 ? (
-          <p className="text-sm text-gray-500">{t("cart")} فارغة.</p>
+          <p className="text-sm text-gray-500">السلة فارغة.</p>
         ) : (
           <>
             <ul className="space-y-2 mb-3 max-h-64 overflow-y-auto">
@@ -252,9 +244,7 @@ function CartButton() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#7b0b4c] font-semibold">
-                      {formatCurrency(c.price)}
-                    </span>
+                    <span className="text-[#7b0b4c] font-semibold">{c.price}</span>
                     <button
                       onClick={() => handleRemove(c.id)}
                       className="text-gray-400 hover:text-red-500 text-xs"
@@ -268,7 +258,7 @@ function CartButton() {
 
             <div className="flex justify-between text-sm font-medium mb-4">
               <span>الإجمالي:</span>
-              <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
+              <span className="text-[#7b0b4c]">{totalPrice}</span>
             </div>
 
             <button
@@ -290,7 +280,7 @@ function CartButton() {
         aria-label="السلة"
         onClick={() => setOpen(true)}
       >
-        🛒
+        <ShoppingCart className="w-5 h-5 text-gray-700" />
         {totalCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
             {totalCount}
@@ -302,92 +292,22 @@ function CartButton() {
     </div>
   );
 }
-/* الترجمة */
- function LangCurrency() {
-  const { lang, setLang, currency, setCurrency, toggleLang } = useApp();
-  const [currencyOpen, setCurrencyOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
 
-  const currencies = {
-    USD: { label: "Dollar", flag: "🇺🇸" },
-    QAR: { label: "Riyal", flag: "🇶🇦" },
-  };
-
-  const languages = {
-    AR: { label: "العربية", flag: "🇸🇦" },
-    EN: { label: "English", flag: "🇬🇧" },
-  };
-
-  const handleCurrencyChange = (key) => {
-    setCurrency(key);
-    setCurrencyOpen(false);
-  };
-
-  const handleLanguageChange = (key) => {
-    setLang(key);
-    toggleLang(); // ← هذا يستدعي ترجمة Google + تغيير الاتجاه
-    setLangOpen(false);
-  };
-
+/* ======================= LangCurrencyFixed ======================= */
+function LangCurrencyFixed() {
   return (
-    <div className="flex items-center gap-3 text-sm" dir="ltr">
-      {/* العملات */}
-      <div className="relative">
-        <button
-          className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
-          onClick={() => {
-            setCurrencyOpen(!currencyOpen);
-            setLangOpen(false);
-          }}
-        >
-          <span>{currencies[currency]?.flag}</span>
-          <span>{currencies[currency]?.label}</span>
-        </button>
-        {currencyOpen && (
-          <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow text-sm z-10">
-            {Object.entries(currencies).map(([key, val]) => (
-              <button
-                key={key}
-                onClick={() => handleCurrencyChange(key)}
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
-              >
-                <span>{val.flag}</span> {val.label}
-              </button>
-            ))}
-          </div>
-        )}
+    <div className="flex items-center gap-3 text-sm">
+      <div className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+        <DollarSign className="w-4 h-4" />
+        <span>USD</span>
       </div>
-
-      {/* اللغات */}
-      <div className="relative">
-        <button
-          className="flex items-center gap-2 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50"
-          onClick={() => {
-            setLangOpen(!langOpen);
-            setCurrencyOpen(false);
-          }}
-        >
-          <span>{languages[lang]?.flag}</span>
-          <span>{languages[lang]?.label}</span>
-        </button>
-        {langOpen && (
-          <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow text-sm z-10">
-            {Object.entries(languages).map(([key, val]) => (
-              <button
-                key={key}
-                onClick={() => handleLanguageChange(key)}
-                className="block px-4 py-2 hover:bg-gray-100 w-full text-right flex items-center gap-2"
-              >
-                <span>{val.flag}</span> {val.label}
-              </button>
-            ))}
-          </div>
-        )}
+      <div className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+        <Globe className="w-4 h-4" />
+        <span>AR</span>
       </div>
     </div>
   );
 }
-
 
 /* ======================= LoginModal ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
@@ -403,9 +323,9 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
     e.preventDefault();
 
     const users = [
-      { name: "المدير العام", email: "alfathhamid599@gmail.com", password: "123456", role: "general_manager" },
-      { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456", role: "executive" },
-      { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456", role: "hr" },
+      { name: "المدير العام", email: "alfathhamid599@gmail.com", password: "123456" },
+      { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456" },
+      { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456" },
     ];
 
     const form = new FormData(e.target);
