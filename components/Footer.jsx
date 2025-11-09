@@ -23,7 +23,7 @@ export default function Footer() {
     { label: "التدريب عن بُعد", href: "/training/online" },
     { label: "ندوات تفاعلية", href: "/training/webinars" },
     { label: "الحملات الإعلانية", href: "/campaigns" },
-    { label: "أسئلة متكررة", href: "/faq" },
+    { label: "أسئلة متكررة", href: "/Faq-page" },
     { label: "الأحكام والشروط", href: "/terms" },
     { label: "سياسة الخصوصية", href: "/privacy" },
   ];
