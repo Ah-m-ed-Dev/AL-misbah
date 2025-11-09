@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 
 export default function WhatsappBubble() {
   const containerRef = useRef(null);
+  const lastScroll = useRef(window.scrollY);
 
   useEffect(() => {
     if (window.__ednaLoaded) return;
@@ -15,7 +16,7 @@ export default function WhatsappBubble() {
 
     const shadow = host.attachShadow({ mode: "open" });
 
-    // إضافة عنصر الويدجت داخل الـ Shadow DOM
+    // إنشاء الويدجت
     const widgetWrapper = document.createElement("div");
     widgetWrapper.setAttribute(
       "style",
@@ -26,11 +27,15 @@ export default function WhatsappBubble() {
       bottom: 20px;
       right: 20px;
       z-index: 9999;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `
     );
     shadow.appendChild(widgetWrapper);
 
-    // إضافة زر × داخل الـ Shadow DOM
+    // زر إغلاق
     const closeBtn = document.createElement("button");
     closeBtn.textContent = "×";
     closeBtn.setAttribute(
@@ -43,15 +48,15 @@ export default function WhatsappBubble() {
       border: none;
       font-size: 20px;
       cursor: pointer;
+      z-index: 10;
     `
     );
     widgetWrapper.appendChild(closeBtn);
-
     closeBtn.addEventListener("click", () => {
       widgetWrapper.style.display = "none";
     });
 
-    // تحميل سكربت Edna داخل الـ Shadow DOM
+    // تحميل سكربت Edna
     const s = document.createElement("script");
     s.type = "text/javascript";
     s.async = true;
@@ -65,7 +70,7 @@ export default function WhatsappBubble() {
         backgroundColor: "#22c55e",
         ctaText: "Contact us",
         icon: "whatsapp",
-        position: "right",
+        position: "left",
       },
       brandSetting: {
         backgroundColor: "#7b0b4c",
@@ -97,7 +102,6 @@ export default function WhatsappBubble() {
             } catch (e) {}
           });
         };
-
         const interval = setInterval(fixDirection, 1000);
         setTimeout(() => clearInterval(interval), 10000);
       }
@@ -105,7 +109,34 @@ export default function WhatsappBubble() {
 
     widgetWrapper.appendChild(s);
 
-    // إخفاء البوب أب عند الضغط خارجها
+    // مراقبة السحب لتغيير الوضع بين كامل/مضغوط
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+      const scrollingDown = currentScroll > lastScroll.current + 10;
+      const scrollingUp = currentScroll < lastScroll.current - 10;
+
+      if (scrollingDown) {
+        // الوضع المضغوط
+        widgetWrapper.style.width = "60px";
+        widgetWrapper.style.height = "60px";
+        widgetWrapper.style.borderRadius = "50%";
+        widgetWrapper.style.overflow = "hidden";
+        widgetWrapper.style.opacity = "0.8";
+      } else if (scrollingUp) {
+        // العودة للوضع الكامل
+        widgetWrapper.style.width = "";
+        widgetWrapper.style.height = "";
+        widgetWrapper.style.borderRadius = "";
+        widgetWrapper.style.overflow = "";
+        widgetWrapper.style.opacity = "1";
+      }
+
+      lastScroll.current = currentScroll;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // إخفاء عند الضغط خارج
     const handleClickOutside = (e) => {
       if (!widgetWrapper.contains(e.target)) {
         widgetWrapper.style.display = "none";
@@ -114,10 +145,9 @@ export default function WhatsappBubble() {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
+      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
-      if (containerRef.current) {
-        containerRef.current.remove();
-      }
+      if (containerRef.current) containerRef.current.remove();
     };
   }, []);
 
