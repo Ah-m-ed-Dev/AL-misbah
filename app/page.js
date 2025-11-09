@@ -40,10 +40,6 @@ export default function LandingPage() {
       {/* فقاعة واتساب */}
       <WhatsappBubble />
 
-      {/* مثال على الترجمة المحلية */}
-      <div className="text-center mt-10 text-lg">
-        {t("welcome")} 👋 ({lang})
-      </div>
     </div>
   );
 }
