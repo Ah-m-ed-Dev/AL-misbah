@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaHeadphones, FaVideo, FaCreditCard, FaGlobe } from "react-icons/fa";
 
-/* 🎨 تعريف الألوان المخصصة */
+/* 🎨 تعريف الألوان */
 const COLORS = {
   primaryDark: "#0d1b2a", // خلفية داكنة
   accent: "#fbc02d", // ذهبي للنبرة
@@ -15,7 +15,6 @@ const COLORS = {
 /* 🎬 مكون الفيديو المنبثق */
 const VideoModal = ({ isOpen, onClose, videoUrl }) => {
   if (!isOpen) return null;
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4"
@@ -47,10 +46,9 @@ const VideoModal = ({ isOpen, onClose, videoUrl }) => {
   );
 };
 
-/* 🧩 الصفحة الرئيسية للبث المباشر */
+/* 🧩 الصفحة */
 export default function OnlineLearningPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -61,7 +59,7 @@ export default function OnlineLearningPage() {
       style={{ backgroundColor: COLORS.primaryDark }}
     >
       <Image
-        src="https://previews.123rf.com/images/olegdudko/olegdudko1802/olegdudko180201443/94697021-modern-education-and-online-learning.jpg"
+        src="https://cdn.vectorstock.com/i/1000x1000/93/16/young-man-study-at-computer-online-learning-vector-44559316.jpg"
         alt="التعلم بالبث المباشر"
         fill
         quality={90}
@@ -103,7 +101,7 @@ export default function OnlineLearningPage() {
           <div className="md:w-1/2 order-1 md:order-2 flex justify-center md:justify-start">
             <div className="relative w-full max-w-md">
               <Image
-                src="/images/live-laptop-main.png"
+                src="https://png.pngtree.com/png-clipart/20210718/original/pngtree-e-learning-with-laptop-for-study-at-home-png-image_6547862.jpg"
                 alt="التعلم عن بعد المباشر"
                 width={700}
                 height={500}
@@ -117,7 +115,7 @@ export default function OnlineLearningPage() {
     </section>
   );
 
-  /* 🎥 قسم الفيديو الترويجي */
+  /* 🎥 قسم الفيديو */
   const VideoPromoSection = () => (
     <section
       className="text-white py-16 px-6"
@@ -142,7 +140,7 @@ export default function OnlineLearningPage() {
 
         <div className="md:w-1/2 relative flex justify-center">
           <Image
-            src="/images/video-promo-laptop.png"
+            src="https://png.pngtree.com/png-clipart/20230823/original/pngtree-online-education-illustration-elearning-learning-laptop-cartoon-png-image_9273788.png"
             alt="شاهد الفيديو الترويجي"
             width={700}
             height={400}
@@ -207,7 +205,6 @@ export default function OnlineLearningPage() {
     </section>
   );
 
-  /* 📦 المخرجات */
   return (
     <div className="min-h-screen w-full">
       <HeroSection />
