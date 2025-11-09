@@ -19,7 +19,7 @@ export default function TermsPage() {
         className="absolute inset-0 bg-cover bg-center opacity-20"
         style={{
           backgroundImage:
-            "url('/images/recorded-courses.jpg') 
+            "url('/images/recorded-courses.jpg')", 
         }}
       ></div>
 
