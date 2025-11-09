@@ -56,7 +56,7 @@ export default function OnlineLearningPage() {
       style={{ backgroundColor: COLORS.primaryDark }}
     >
       <Image
-        src="https://images.unsplash.com/photo-1606326608690-9f4e1f9f34d2?auto=format&fit=crop&w=1600&q=80"
+        src="/images/94697021-modern-education-and-online-learning.jpg"
         alt="التعلم بالبث المباشر"
         fill
         quality={90}
@@ -97,7 +97,7 @@ export default function OnlineLearningPage() {
           <div className="md:w-1/2 order-1 md:order-2 flex justify-center md:justify-start">
             <div className="relative w-full max-w-md">
               <Image
-                src="https://cdn.pixabay.com/photo/2015/01/21/14/14/apple-606761_960_720.jpg"
+                src="/images/young-man-study-at-computer-online-learning-vector-44559316.jpg"
                 alt="التعلم عن بعد المباشر"
                 width={700}
                 height={500}
