@@ -1,9 +1,9 @@
-
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FaWhatsapp, FaPhone } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const COLORS = {
   primaryDark: "#0d1b2a",
@@ -11,140 +11,80 @@ const COLORS = {
   maroon: "#601a43",
 };
 
-const faqData = [
+const faqs = [
   {
     question: "كيف أسجل في دورة؟",
-    answer:
-      "يمكنك التسجيل عن طريق ملء نموذج الاتصال في هذه الصفحة، أو الاتصال بمكتب القبول لدينا، أو زيارة مركز التدريب الخاص بنا شخصيًا. سيرشدك فريقنا خلال عملية التسجيل.",
+    answer: `يمكنك التسجيل عن طريق ملء نموذج الاتصال في هذه الصفحة، أو الاتصال بمكتب القبول لدينا، أو زيارة مركز التدريب الخاص بنا شخصيًا. سيرشدك فريقنا خلال عملية التسجيل.`,
   },
   {
     question: "هل هناك متطلبات مسبقة لدوراتكم؟",
-    answer:
-      "معظم دوراتنا لا تتطلب متطلبات محددة مسبقة. ومع ذلك، يوصى بمعرفة أساسية بالكمبيوتر لجميع البرامج. دورة ICDL مناسبة للمبتدئين، في حين أن بعض وحدات المحاسبة الإلكترونية المتقدمة قد تتطلب معرفة أساسية بالمحاسبة.",
+    answer: `معظم دوراتنا لا تتطلب متطلبات محددة مسبقة. ومع ذلك، يوصى بمعرفة أساسية بالكمبيوتر لجميع البرامج. دورة ICDL مناسبة للمبتدئين، في حين أن بعض وحدات المحاسبة الإلكترونية المتقدمة قد تتطلب معرفة أساسية بالمحاسبة.`,
   },
   {
     question: "ما هي الشهادات التي سأحصل عليها بعد الانتهاء؟",
-    answer:
-      "عند الانتهاء بنجاح من دورتك واجتياز التقييمات المطلوبة، ستحصل على شهادة رسمية. بالنسبة لـ ICDL، ستحصل على شهادة ICDL معترف بها دوليًا. توفر برامج المحاسبة الإلكترونية وتخليص المستندات شهادات المصباح التي يتم الاعتراف بها جيدًا من قبل أصحاب العمل المحليين.",
+    answer: `عند الانتهاء بنجاح من دورتك واجتياز التقييمات المطلوبة، ستحصل على شهادة رسمية. بالنسبة لـ ICDL، ستحصل على شهادة ICDL معترف بها دوليًا. توفر برامج المحاسبة الإلكترونية وشهادات المصباح اعترافًا جيدًا من أصحاب العمل المحليين.`,
   },
   {
     question: "هل تقدمون خطط دفع مرنة؟",
-    answer:
-      "نعم، نقدم خيارات دفع مرنة بما في ذلك خطط التقسيط. يرجى الاتصال بمكتب القبول لدينا للحصول على تفاصيل حول خطط الدفع المتاحة لدورتك المحددة التي تهتم بها.",
+    answer: `نعم، نقدم خيارات دفع مرنة بما في ذلك خطط التقسيط. يرجى الاتصال بمكتب القبول لدينا للحصول على تفاصيل.`,
   },
   {
     question: "هل يمكنني زيارة المنشأة قبل التسجيل؟",
-    answer:
-      "بالتأكيد! نشجع الطلاب المحتملين على زيارة مركز التدريب الخاص بنا. يمكنك جدولة جولة بالاتصال بنا عبر الهاتف أو البريد الإلكتروني، وسيكون فريقنا سعيدًا بإظهار مرافقنا والإجابة على أي أسئلة.",
+    answer: `بالطبع! يمكنك جدولة جولة بالاتصال بنا عبر الهاتف أو البريد الإلكتروني، وسيكون فريقنا سعيدًا بإظهار مرافقنا والإجابة على أي أسئلة.`,
   },
 ];
 
-export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState(null);
-  const [showWhatsApp, setShowWhatsApp] = useState(true);
-  const lastScroll = useRef(0);
-
-  const toggleIndex = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const current = window.scrollY;
-      if (current > lastScroll.current) {
-        setShowWhatsApp(false);
-      } else {
-        setShowWhatsApp(true);
-      }
-      lastScroll.current = current;
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+export default function FAQPage() {
+  const [expanded, setExpanded] = useState(null);
 
   return (
-    <div className="min-h-screen bg-white text-[#0d1b2a]">
-      {/* الهيرو */}
-      <section
-        className="relative text-white py-20 px-6 overflow-hidden"
+    <div className="min-h-screen bg-gray-50 text-right">
+      <header
+        className="py-16 px-6"
         style={{ backgroundColor: COLORS.primaryDark }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-5xl mx-auto text-right"
-        >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4">
+        <div className="max-w-5xl mx-auto text-white">
+          <h1 className="text-4xl font-extrabold mb-4">
             الأسئلة المتكررة
           </h1>
-          <p className="text-gray-300 text-lg sm:text-xl">
+          <p className="text-gray-200">
             اعثر على إجابات للأسئلة الشائعة حول دوراتنا وعملية التسجيل والمزيد.
           </p>
-        </motion.div>
-      </section>
+        </div>
+      </header>
 
-      {/* FAQ Accordion */}
-      <section className="max-w-5xl mx-auto py-16 px-6 text-right">
-        {faqData.map((item, idx) => (
+      <main className="max-w-4xl mx-auto p-6 space-y-4">
+        {faqs.map((faq, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="mb-4 border-b border-gray-300 pb-4"
+            className="bg-white p-4 rounded-xl shadow cursor-pointer"
+            onClick={() => setExpanded(expanded === idx ? null : idx)}
           >
-            <button
-              onClick={() => toggleIndex(idx)}
-              className="w-full flex justify-between items-center py-3 text-lg font-semibold hover:text-[#fbc02d] transition"
-            >
-              {item.question}
-              <span className="text-2xl">{openIndex === idx ? "-" : "+"}</span>
-            </button>
-
-            <AnimatePresence>
-              {openIndex === idx && (
-                <motion.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-2 text-gray-700 leading-relaxed"
-                >
-                  {item.answer}
-                </motion.p>
-              )}
-            </AnimatePresence>
+            <h2 className="font-semibold text-lg">{faq.question}</h2>
+            {expanded === idx && (
+              <p className="mt-2 text-gray-700">{faq.answer}</p>
+            )}
           </motion.div>
         ))}
+      </main>
 
-        <p className="mt-6 text-gray-600">
-          هل لا تزال لديك أسئلة؟ اتصل بنا مباشرة للحصول على مزيد من المعلومات.
-        </p>
-
-        {/* أزرار التواصل */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-4">
-          <a
-            href="tel:+97472041794"
-            className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#601a43] text-white font-semibold hover:bg-[#4e1334] transition"
-          >
-            <FaPhoneAlt /> اتصال مباشر
-          </a>
-        </div>
-
-        {/* WhatsApp Floating */}
-        <motion.a
-          href="https://wa.me/+97472041794"
-          target="_blank"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: showWhatsApp ? 1 : 0, y: showWhatsApp ? 0 : 50 }}
-          transition={{ type: "spring", stiffness: 120 }}
-          className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-[#25D366] text-white shadow-lg hover:bg-[#1eb15a] cursor-pointer"
+      <footer className="max-w-4xl mx-auto p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <Link
+          href="tel:+97472041794"
+          className="flex items-center gap-2 bg-[#601a43] text-white px-6 py-3 rounded-lg hover:opacity-90 transition"
         >
-          <FaWhatsapp className="w-6 h-6" />
-          {showWhatsApp && <span className="font-semibold">تواصل عبر واتساب</span>}
-        </motion.a>
-      </section>
+          <FaPhone /> اتصال مباشر
+        </Link>
+        <Link
+          href="https://wa.me/+97472041794"
+          className="flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-lg hover:opacity-90 transition"
+        >
+          <FaWhatsapp /> تواصل عبر واتساب
+        </Link>
+      </footer>
     </div>
   );
 }
