@@ -19,7 +19,7 @@ export default function TermsPage() {
         className="absolute inset-0 bg-cover bg-center opacity-20"
         style={{
           backgroundImage:
-            "url('/images/training-bg.jpg')", // ضع الصورة في public/images/training-bg.jpg
+            "url('/images/recorded-courses.jpg // ضع الصورة في public/images/training-bg.jpg
         }}
       ></div>
 
@@ -92,7 +92,7 @@ export default function TermsPage() {
               className="flex items-center justify-center gap-2 bg-[#7b0b4c] text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition"
             >
               <Phone className="w-5 h-5" />
-              <span>اتصال مباشر: +249 91 234 5678</span>
+              <span>اتصال مباشر</span>
             </a>
             <a
               href="https://wa.me/+974 7204 1794"
@@ -101,7 +101,7 @@ export default function TermsPage() {
               className="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition"
             >
               <MessageCircle className="w-5 h-5" />
-              <span>تواصل عبر واتساب: +974 7204 1794</span>
+              <span>تواصل عبر واتساب</span>
             </a>
           </div>
         </motion.div>
