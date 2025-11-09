@@ -80,7 +80,7 @@ export default function RecordedCoursesPage() {
       {/* 🔴 Hero Section - رأس الصفحة */}
       <section className="relative bg-[#381125] overflow-hidden"> 
         <Image 
-          src={HERO_BG_IMAGE} 
+          src="/images/3784896-scaled.jpg" 
           alt="خلفية الدورات المسجلة"
           layout="fill"
           objectFit="cover"
