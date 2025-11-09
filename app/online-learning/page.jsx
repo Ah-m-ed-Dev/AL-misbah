@@ -5,11 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaHeadphones, FaVideo, FaCreditCard, FaGlobe } from "react-icons/fa";
 
-/* 🎨 تعريف الألوان */
 const COLORS = {
-  primaryDark: "#0d1b2a", // خلفية داكنة
-  accent: "#fbc02d", // ذهبي للنبرة
-  maroon: "#601a43", // خمري أساسي
+  primaryDark: "#0d1b2a",
+  accent: "#fbc02d",
+  maroon: "#601a43",
 };
 
 /* 🎬 مكون الفيديو المنبثق */
@@ -21,13 +20,12 @@ const VideoModal = ({ isOpen, onClose, videoUrl }) => {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl h-auto aspect-video"
+        className="relative w-full max-w-4xl aspect-video"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
           className="absolute -top-10 right-0 md:-right-10 text-white text-3xl font-bold p-2 z-50 hover:text-red-500 transition"
-          aria-label="إغلاق الفيديو"
         >
           &times;
         </button>
@@ -46,7 +44,6 @@ const VideoModal = ({ isOpen, onClose, videoUrl }) => {
   );
 };
 
-/* 🧩 الصفحة */
 export default function OnlineLearningPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
@@ -59,14 +56,13 @@ export default function OnlineLearningPage() {
       style={{ backgroundColor: COLORS.primaryDark }}
     >
       <Image
-        src="https://cdn.vectorstock.com/i/1000x1000/93/16/young-man-study-at-computer-online-learning-vector-44559316.jpg"
+        src="https://images.unsplash.com/photo-1606326608690-9f4e1f9f34d2?auto=format&fit=crop&w=1600&q=80"
         alt="التعلم بالبث المباشر"
         fill
         quality={90}
-        className="object-cover opacity-70"
+        className="object-cover opacity-60"
         priority
       />
-
       <div className="relative z-10 pt-24 pb-40 md:py-40 px-6 max-w-7xl mx-auto">
         <nav className="text-sm flex justify-end gap-2 mb-8 md:mb-12">
           <Link href="/" className="hover:text-[#fbc02d]">
@@ -82,7 +78,7 @@ export default function OnlineLearningPage() {
               طور مهاراتك وأنت في مكانك!
             </h1>
             <p className="text-base sm:text-lg mb-6 text-gray-200 leading-relaxed">
-              تعلم عن بعد وتتميز بشهادات معتمدة دولية. أكثر من 50 دورة في مختلف
+              تعلم عن بعد وتتميز بشهادات معتمدة دولية. أكثر من 50 دورة في
               التخصصات الأكثر طلباً محلياً وعالمياً!
             </p>
             <Link href="/course-schedule" passHref>
@@ -101,7 +97,7 @@ export default function OnlineLearningPage() {
           <div className="md:w-1/2 order-1 md:order-2 flex justify-center md:justify-start">
             <div className="relative w-full max-w-md">
               <Image
-                src="https://png.pngtree.com/png-clipart/20210718/original/pngtree-e-learning-with-laptop-for-study-at-home-png-image_6547862.jpg"
+                src="https://cdn.pixabay.com/photo/2015/01/21/14/14/apple-606761_960_720.jpg"
                 alt="التعلم عن بعد المباشر"
                 width={700}
                 height={500}
@@ -115,7 +111,7 @@ export default function OnlineLearningPage() {
     </section>
   );
 
-  /* 🎥 قسم الفيديو */
+  /* 🎥 قسم الفيديو الترويجي */
   const VideoPromoSection = () => (
     <section
       className="text-white py-16 px-6"
@@ -124,23 +120,21 @@ export default function OnlineLearningPage() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
         <div className="md:w-1/2 text-right">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4 leading-relaxed">
-            لم تعد المسافات عائق بعد الآن
+            لم تعد المسافات عائقاً بعد الآن
           </h2>
           <p className="text-lg sm:text-xl text-gray-300 mb-6">
             مع نظام <strong>التعلم عن بعد</strong> بخاصية{" "}
             <strong>البث المباشر</strong>.
           </p>
           <p className="text-base sm:text-lg text-gray-400 leading-relaxed">
-            أصبح بإمكانك الإلتحاق بالدورات التدريبية التي تُعقد في الأكاديمية
-            دون الحاجة للتواجد داخل القاعة التدريبية، سواء كنت في المنزل أو
-            العمل أو حتى في المقهى. كل ما يلزمك هو جهاز حاسوب متصل بالإنترنت
-            لتكون قادراً على الدخول لحسابك والانضمام للدورات والتفاعل بسهولة.
+            أصبح بإمكانك الالتحاق بالدورات من أي مكان — المنزل، العمل، أو حتى
+            المقهى — وتتعلم بسهولة وتفاعل مباشر مع المدربين.
           </p>
         </div>
 
         <div className="md:w-1/2 relative flex justify-center">
           <Image
-            src="https://png.pngtree.com/png-clipart/20230823/original/pngtree-online-education-illustration-elearning-learning-laptop-cartoon-png-image_9273788.png"
+            src="https://cdn.pixabay.com/photo/2016/03/09/09/30/laptop-1245714_960_720.jpg"
             alt="شاهد الفيديو الترويجي"
             width={700}
             height={400}
@@ -149,7 +143,6 @@ export default function OnlineLearningPage() {
           <button
             onClick={openModal}
             className="absolute inset-0 m-auto flex items-center justify-center w-20 h-20 bg-white/80 rounded-full shadow-lg transition transform hover:scale-105"
-            aria-label="تشغيل الفيديو الترويجي"
           >
             <FaVideo className="w-10 h-10 text-[#601a43]" />
           </button>
@@ -175,13 +168,13 @@ export default function OnlineLearningPage() {
 
         <div className="flex flex-col items-center">
           <FaVideo className="w-12 h-12 mb-3" />
-          <h3 className="font-bold mb-2 text-lg">سلسلة من الدروس المسجلة</h3>
+          <h3 className="font-bold mb-2 text-lg">دروس مسجلة متاحة دائماً</h3>
           <p className="text-sm text-gray-200">خلال الدورة</p>
         </div>
 
         <div className="flex flex-col items-center">
           <FaCreditCard className="w-12 h-12 mb-3" />
-          <h3 className="font-bold mb-2 text-lg">خيارات متعددة للدفع</h3>
+          <h3 className="font-bold mb-2 text-lg">خيارات دفع متعددة</h3>
           <ul className="text-sm text-gray-200 list-none">
             <li>فيزا / ماستر كارد</li>
             <li>آي فورت</li>
@@ -193,10 +186,10 @@ export default function OnlineLearningPage() {
         <div className="flex flex-col items-center">
           <FaGlobe className="w-12 h-12 mb-3" />
           <h3 className="font-bold mb-2 text-lg">
-            مكان واحد لإدارة جميع أمورك الأكاديمية
+            مكان واحد لإدارة كل أمورك الأكاديمية
           </h3>
           <ul className="text-sm text-gray-200 list-none">
-            <li>مرفقات المواد والمراجع التعليمية</li>
+            <li>مرفقات المواد والمراجع</li>
             <li>التواصل مع المدرب مباشرة</li>
             <li>طلب إصدار الشهادات</li>
           </ul>
