@@ -74,13 +74,13 @@ export default function FAQPage() {
         >
           <FaWhatsapp /> تواصل عبر واتساب
         </Link>
-
       </footer>
-
-    </div>
+<br>
 {/* الفاصل السفلي */}
       <div className="absolute bottom-4 left-0 right-0 text-center text-gray-500 text-sm">
         © {new Date().getFullYear()} مركز المصباح للتدريب المهني — جميع الحقوق محفوظة.
       </div>
+    </div>
+
   );
 }
