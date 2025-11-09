@@ -61,7 +61,7 @@ export default function OnlineLearningPage() {
       style={{ backgroundColor: COLORS.primaryDark }}
     >
       <Image
-        src="https://cdn2.vectorstock.com/i/1000x1000/93/16/young-man-study-at-computer-online-learning-vector-44559316.jpg"
+        src="https://previews.123rf.com/images/olegdudko/olegdudko1802/olegdudko180201443/94697021-modern-education-and-online-learning.jpg"
         alt="التعلم بالبث المباشر"
         fill
         quality={90}
