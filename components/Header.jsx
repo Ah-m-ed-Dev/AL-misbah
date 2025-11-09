@@ -40,7 +40,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40" dir="ltr">
+    <header className="sticky top-0 z-40" dir="rtl">
       <GlobalAnimations />
 
       {/* Top Bar */}
@@ -151,7 +151,7 @@ function SearchButton() {
       {open && (
         <form
           onSubmit={handleSearch}
-          className="absolute top-12 left-1/2 -translate-x-1/2 bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in"
+          className="absolute top-12 right-1/2 translate-x-1/2 bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in"
         >
           <input
             type="text"
@@ -218,10 +218,10 @@ function CartButton() {
 
   const modal = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-scale-in text-right">
         <button
           onClick={() => setOpen(false)}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
+          className="absolute top-3 left-3 text-gray-500 hover:text-gray-800 text-xl"
         >
           ✕
         </button>
@@ -282,7 +282,7 @@ function CartButton() {
       >
         <ShoppingCart className="w-5 h-5 text-gray-700" />
         {totalCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
+          <span className="absolute -top-1 -left-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">
             {totalCount}
           </span>
         )}
@@ -304,94 +304,6 @@ function LangCurrencyFixed() {
       <div className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
         <Globe className="w-4 h-4" />
         <span>AR</span>
-      </div>
-    </div>
-  );
-}
-
-/* ======================= LoginModal ======================= */
-function LoginModal({ mode, onClose, setAuthMode, setUser }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleEsc = (e) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", handleEsc);
-    return () => document.removeEventListener("keydown", handleEsc);
-  }, [onClose]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const users = [
-      { name: "المدير العام", email: "alfathhamid599@gmail.com", password: "123456" },
-      { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456" },
-      { name: "مدير الموارد البشرية", email: "atag4052@gmail.com", password: "123456" },
-    ];
-
-    const form = new FormData(e.target);
-    const email = form.get("email");
-    const password = form.get("password");
-    const foundUser = users.find(u => u.email === email && u.password === password);
-
-    if (foundUser) {
-      localStorage.setItem("user", JSON.stringify(foundUser));
-      setUser(foundUser);
-      onClose();
-      router.push("/dashboard");
-    } else {
-      alert("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة!");
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 left-3 text-gray-500 hover:text-gray-700"
-        >
-          ✕
-        </button>
-
-        <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
-          {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1">البريد الإلكتروني</label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-              placeholder="example@mail.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">كلمة المرور</label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]"
-          >
-            {mode === "login" ? "تسجيل الدخول" : "تسجيل"}
-          </button>
-        </form>
       </div>
     </div>
   );
