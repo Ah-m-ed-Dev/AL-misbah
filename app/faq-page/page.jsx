@@ -34,7 +34,7 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-right">
-      <header className="py-16 px-6 bg-[#0d1b2a] text-white">
+      <header className="py-16 px-6 bg-[#601a43] text-white">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-extrabold mb-4">الأسئلة المتكررة</h1>
           <p className="text-gray-200">
@@ -53,7 +53,7 @@ export default function FAQPage() {
             className="bg-white p-4 rounded-xl shadow cursor-pointer"
             onClick={() => setExpanded(expanded === idx ? null : idx)}
           >
-            <h2 className="font-semibold text-lg">{faq.question}</h2>
+            <h2 className="font-semibold text-[#601a43]">{faq.question}</h2>
             {expanded === idx && (
               <p className="mt-2 text-gray-700">{faq.answer}</p>
             )}
