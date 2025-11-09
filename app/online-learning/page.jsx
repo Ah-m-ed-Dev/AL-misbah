@@ -97,7 +97,7 @@ export default function OnlineLearningPage() {
           <div className="md:w-1/2 order-1 md:order-2 flex justify-center md:justify-start">
             <div className="relative w-full max-w-md">
               <Image
-                src="/images/young-man-study-at-computer-online-learning-vector-44559316.jpg"
+                src="/images/young man.jpg"
                 alt="التعلم عن بعد المباشر"
                 width={700}
                 height={500}
