@@ -200,19 +200,5 @@ export default function OnlineLearningPage() {
       <HeroSection />
       <VideoPromoSection />
       <FeaturesSection />
-
-      {/* 💬 زر Chat with us العائم (WhatsApp) */}
-      <Link 
-        href="https://wa.me/XXXXXXXXXXX"
-        target="_blank" 
-        className="fixed bottom-6 right-6 z-40 bg-green-500 text-white flex items-center gap-2 p-3 rounded-full shadow-lg hover:bg-green-600 transition"
-      >
-        <FaWhatsapp className="w-6 h-6" />
-        <span className="font-semibold">Chat with us</span>
-      </Link>
-      
-      {/* 🎬 مشغل الفيديو (Modal) */}
-      <VideoModal isOpen={isModalOpen} onClose={closeModal} videoUrl={PROMO_VIDEO_URL} />
-    </div>
   );
 }
