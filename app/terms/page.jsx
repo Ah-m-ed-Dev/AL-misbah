@@ -43,7 +43,7 @@ export default function TermsPage() {
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-gray-700 text-center max-w-3xl mx-auto mb-12 leading-relaxed"
+          className="text-gray-500 text-center max-w-3xl mx-auto mb-12 leading-relaxed"
         >
           من خلال استخدامك لموقعنا أو التسجيل في إحدى دوراتنا، فإنك توافق على
           الالتزام بجميع الشروط والأحكام التالية الخاصة بمركز المصباح للتدريب.
@@ -112,7 +112,7 @@ export default function TermsPage() {
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-center text-sm text-gray-600 mt-12"
+          className="text-center text-sm text-gray-500 mt-12"
         >
           © 2025 مركز المصباح للتدريب – جميع الحقوق محفوظة
         </motion.p>
