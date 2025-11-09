@@ -48,7 +48,7 @@ export default function WhatsappBubble() {
         backgroundColor: "#22c55e",
         ctaText: "Contact us",
         icon: "whatsapp",
-        position: "right",
+        position: "left",
       },
       brandSetting: {
         backgroundColor: "#7b0b4c",
