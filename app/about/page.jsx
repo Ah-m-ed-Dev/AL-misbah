@@ -32,6 +32,10 @@ export default function AboutPage() {
           رسالتنا: تمكين الأفراد بالمعرفة والمهارة لبناء مستقبل مهني مستدام.
         </p>
       </div>
+{/* الفاصل السفلي */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-gray-50 text-sm">
+        © {new Date().getFullYear()} مركز المصباح للتدريب المهني — جميع الحقوق محفوظة.
+      </div>
     </div>
   );
 }
