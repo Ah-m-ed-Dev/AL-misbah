@@ -59,18 +59,19 @@ export default function CoursesCarousel() {
   const [loading, setLoading] = useState(true);
   const [searchFilter, setSearchFilter] = useState("");
 
-  // دالة إضافة الدورة للسلة
+    // دالة إضافة الدورة للسلة
   const addToCart = (course) => {
     const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (!currentCart.find((c) => c.id === course.id)) {
       currentCart.push(course);
       localStorage.setItem("cart", JSON.stringify(currentCart));
       window.dispatchEvent(new Event("cartUpdated"));
-      alert("تمت إضافة الدورة للسلة!");
+      showToast("✅ تمت إضافة الدورة إلى السلة!");
     } else {
-      alert("الدورة موجودة بالفعل في السلة.");
+      showToast("⚠️ الدورة موجودة بالفعل في السلة.");
     }
   };
+
 
   // جلب البيانات من Supabase
   const fetchCourses = async () => {
