@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { ShoppingCart, Search, Globe, DollarSign } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../app/context/AppContext";
 import { useRouter } from "next/navigation";
 
 /* ======================= GlobalAnimations ======================= */
