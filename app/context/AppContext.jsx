@@ -16,6 +16,7 @@ const DICT = {
     campaigns_title: "حملاتنا الإعلانية",
     add_course: "إضافة دورة",
     courses: "الدورات",
+    Human Resources Manager:" مدير الموارد البشرية", 
   },
   EN: {
     login: "Login",
@@ -31,6 +32,7 @@ const DICT = {
     campaigns_title: "Our Campaigns",
     add_course: "Add Course",
     courses: "Courses",
+    Human Resources Manager:"Human Resources Manager", 
   },
 };
 
