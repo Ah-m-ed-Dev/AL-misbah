@@ -85,7 +85,7 @@ export function AppProvider({ children }) {
   // ترجمة المفاتيح
   const t = (key) => DICT[lang]?.[key] || key;
 
-  // تنسيق العملة مع تحويل فعلي
+  // 🔢 تنسيق العملة - الأرقام تبقى إنجليزية دائمًا
   const formatCurrency = (value) => {
     if (!value) return "";
     const num =
@@ -96,7 +96,7 @@ export function AppProvider({ children }) {
     const baseUSD = num / (exchangeRates["QAR"] || 3.64);
     const converted = baseUSD * (exchangeRates[currency] || 1);
 
-    return new Intl.NumberFormat(lang === "EN" ? "en-US" : "ar-SA", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
       maximumFractionDigits: 0,
