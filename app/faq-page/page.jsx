@@ -32,7 +32,8 @@ export default function FAQPage() {
   const [expanded, setExpanded] = useState(null);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-right">
+    <div className="relative min-h-screen bg-gray-50 text-right">
+      {/* رأس الصفحة */}
       <header className="py-16 px-6 bg-[#601a43] text-white">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-extrabold mb-4">الأسئلة المتكررة</h1>
@@ -42,6 +43,7 @@ export default function FAQPage() {
         </div>
       </header>
 
+      {/* المحتوى */}
       <main className="max-w-4xl mx-auto p-6 space-y-4">
         {faqs.map((faq, idx) => (
           <motion.div
@@ -60,6 +62,7 @@ export default function FAQPage() {
         ))}
       </main>
 
+      {/* التذييل */}
       <footer className="max-w-4xl mx-auto p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
         <Link
           href="tel:+97472041794"
@@ -74,10 +77,11 @@ export default function FAQPage() {
           <FaWhatsapp /> تواصل عبر واتساب
         </Link>
       </footer>
-    </div>
-{/* الفاصل السفلي */}
-      <div className="absolute bottom-4 left-0 right-0 top-5 text-center text-gray-500 text-sm">
+
+      {/* الفاصل السفلي */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-gray-500 text-sm">
         © {new Date().getFullYear()} مركز المصباح للتدريب المهني — جميع الحقوق محفوظة.
       </div>
+    </div>
   );
 }
