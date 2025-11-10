@@ -39,13 +39,16 @@ const AppContext = createContext();
 export function AppProvider({ children }) {
   const [lang, setLang] = useState("AR");
   const [currency, setCurrency] = useState("QAR");
+  const [exchangeRates, setExchangeRates] = useState({ USD: 1, QAR: 3.64 });
 
   // تحميل القيم من localStorage
   useEffect(() => {
     const sLang = localStorage.getItem("app_lang");
     const sCur = localStorage.getItem("app_currency");
+    const savedRates = localStorage.getItem("exchange_rates");
     if (sLang) setLang(sLang);
     if (sCur) setCurrency(sCur);
+    if (savedRates) setExchangeRates(JSON.parse(savedRates));
   }, []);
 
   // حفظ القيم وتحديث الاتجاه
@@ -56,53 +59,48 @@ export function AppProvider({ children }) {
     document.documentElement.dir = lang === "EN" ? "ltr" : "rtl";
   }, [lang, currency]);
 
-  // تحميل Google Translate
+  // جلب أسعار الصرف من API
   useEffect(() => {
-    if (window.googleTranslateElementInit) return;
-    window.googleTranslateElementInit = function () {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "en",
-          includedLanguages: "ar,en",
-          autoDisplay: false,
-        },
-        "google_translate_element"
-      );
-    };
-    const script = document.createElement("script");
-    script.src =
-      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    document.body.appendChild(script);
+    async function fetchRates() {
+      try {
+        const res = await fetch("https://api.exchangerate.host/latest?base=USD");
+        const data = await res.json();
+        if (data?.rates) {
+          setExchangeRates(data.rates);
+          localStorage.setItem("exchange_rates", JSON.stringify(data.rates));
+        }
+      } catch (err) {
+        console.error("فشل في جلب أسعار الصرف:", err);
+      }
+    }
+    fetchRates();
   }, []);
 
   // تبديل اللغة
   const toggleLang = () => {
     const newLang = lang === "AR" ? "EN" : "AR";
     setLang(newLang);
-
-    const select = document.querySelector(".goog-te-combo");
-    if (select) {
-      select.value = newLang === "AR" ? "ar" : "en";
-      select.dispatchEvent(new Event("change"));
-    }
   };
 
   // ترجمة المفاتيح
   const t = (key) => DICT[lang]?.[key] || key;
 
-  // تنسيق العملة
+  // تنسيق العملة مع تحويل فعلي
   const formatCurrency = (value) => {
-    if (value == null || value === "") return "";
+    if (!value) return "";
     const num =
       typeof value === "number"
         ? value
         : parseFloat(value.toString().replace(/[^\d.-]/g, "")) || 0;
 
+    const baseUSD = num / (exchangeRates["QAR"] || 3.64);
+    const converted = baseUSD * (exchangeRates[currency] || 1);
+
     return new Intl.NumberFormat(lang === "EN" ? "en-US" : "ar-SA", {
       style: "currency",
       currency,
       maximumFractionDigits: 0,
-    }).format(num);
+    }).format(converted);
   };
 
   return (
@@ -118,8 +116,6 @@ export function AppProvider({ children }) {
       }}
     >
       {children}
-      {/* عنصر ترجمة Google (مخفي) */}
-      <div id="google_translate_element" style={{ display: "none" }}></div>
     </AppContext.Provider>
   );
 }
