@@ -6,7 +6,7 @@ export default function PrivacyPage() {
       className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center relative"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1556741533-f6acd647d2fb?auto=format&fit=crop&w=1920&q=80')",
+          "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('/images/pngtree-ai-generated-cyber-security-and-data-privacy-lock-symbol-and-protection-picture-image_15511358.jpg')",
       }}
     >
       {/* المحتوى الرئيسي */}
