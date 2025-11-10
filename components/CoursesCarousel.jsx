@@ -234,7 +234,7 @@ export default function CoursesCarousel() {
             <p className="text-sm text-gray-500 mb-2">
               السعر:{" "}
               <span className="font-medium">
-                {formatCurrency(parseFloat(selectedCourse.price.replace(/[^\d.]/g, "")))}
+                {formatCurrency(parseFloat(selectedCourse.discount.replace(/[^\d.]/g, "")))}
               </span>
             </p>
             <p className="text-gray-700 mb-4 leading-relaxed">{selectedCourse.description}</p>
