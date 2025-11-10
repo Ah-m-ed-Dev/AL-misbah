@@ -1,6 +1,8 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useApp } from "../context/AppContext"; // تأكد أن المسار صحيح
 
 // إعداد Supabase
 const supabaseUrl = "https://kyazwzdyodysnmlqmljv.supabase.co";
@@ -44,6 +46,7 @@ function CourseCard({ course, onClick }) {
 
 // -------- المكون الرئيسي --------
 export default function CoursesCarousel() {
+  const { currency, formatCurrency } = useApp(); // استخدام AppContext للعملة
   const [categories, setCategories] = useState(["الكل"]);
   const [activeTab, setActiveTab] = useState("الكل");
   const [start, setStart] = useState(0);
@@ -98,7 +101,7 @@ export default function CoursesCarousel() {
     // قراءة قيمة البحث من Hero عند تحميل الصفحة
     const savedQuery = localStorage.getItem("searchQuery");
     if (savedQuery) {
-      setActiveTab("الكل"); // عرض جميع الدورات أولاً
+      setActiveTab("الكل");
       setSearchFilter(savedQuery.toLowerCase());
       localStorage.removeItem("searchQuery");
     }
@@ -138,25 +141,48 @@ export default function CoursesCarousel() {
         </h2>
 
         {/* أزرار الفئات */}
-        <div className="flex flex-wrap items-center gap-4 mb-10">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => {
-                setActiveTab(cat);
-                setStart(0);
-                setSearchFilter(""); // مسح البحث عند تغيير الفئة
-              }}
-              className={`px-4 py-2 rounded-full text-sm md:text-base transition border ${
-                activeTab === cat
-                  ? "bg-[#7a1353] text-white border-[#7a1353] shadow"
-                  : "bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-700"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+<div className="mb-10">
+  {/* قائمة Dropdown للهاتف */}
+  <div className="sm:hidden">
+    <select
+      value={activeTab}
+      onChange={(e) => {
+        setActiveTab(e.target.value);
+        setStart(0);
+        setSearchFilter("");
+      }}
+      className="w-full border rounded-lg px-3 py-2 text-gray-700"
+    >
+      {categories.map((cat) => (
+        <option key={cat} value={cat}>
+          {cat}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* أزرار الفئات للشاشات الأكبر */}
+  <div className="hidden sm:flex flex-wrap items-center gap-4">
+    {categories.map((cat) => (
+      <button
+        key={cat}
+        onClick={() => {
+          setActiveTab(cat);
+          setStart(0);
+          setSearchFilter("");
+        }}
+        className={`px-4 py-2 rounded-full text-sm md:text-base transition border ${
+          activeTab === cat
+            ? "bg-[#7a1353] text-white border-[#7a1353] shadow"
+            : "bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-700"
+        }`}
+      >
+        {cat}
+      </button>
+    ))}
+  </div>
+</div>
+
 
         {/* عرض الدورات */}
         {loading ? (
@@ -166,7 +192,15 @@ export default function CoursesCarousel() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {visible.map((c) => (
-              <CourseCard key={c.id} course={c} onClick={() => setSelectedCourse(c)} />
+              <CourseCard
+                key={c.id}
+                course={{
+                  ...c,
+                  price: formatCurrency(parseFloat(c.price.replace(/[^\d.]/g, ""))),
+                  discount: formatCurrency(parseFloat(c.discount?.replace(/[^\d.]/g, ""))),
+                }}
+                onClick={() => setSelectedCourse(c)}
+              />
             ))}
           </div>
         )}
@@ -194,11 +228,13 @@ export default function CoursesCarousel() {
               التصنيف: <span className="font-medium">{selectedCourse.category}</span>
             </p>
             <p className="text-sm text-gray-500 mb-2">
-              السعر: <span className="font-medium">{selectedCourse.price}</span>
+              السعر:{" "}
+              <span className="font-medium">
+                {formatCurrency(parseFloat(selectedCourse.price.replace(/[^\d.]/g, "")))}
+              </span>
             </p>
             <p className="text-gray-700 mb-4 leading-relaxed">{selectedCourse.description}</p>
 
-            {/* زر إضافة للسلة */}
             <button
               onClick={() => addToCart(selectedCourse)}
               className="w-full bg-[#7a1353] text-white py-2 rounded-lg mt-4"
