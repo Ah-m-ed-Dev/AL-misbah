@@ -6,7 +6,7 @@ export default function PrivacyPage() {
       className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center relative"
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1581090700227-1e37b190418e?auto=format&fit=crop&w=1950&q=80')",
+          "url('https://images.unsplash.com/photo-1605902711622-cfb43c4437e0?auto=format&fit=crop&w=1950&q=80')",
       }}
     >
       {/* المحتوى الرئيسي */}
