@@ -32,7 +32,7 @@ export default function FAQPage() {
   const [expanded, setExpanded] = useState(null);
 
   return (
-    <div className="relative min-h-screen bg-gray-50 text-right">
+    <div className="min-h-screen flex flex-col bg-gray-50 text-right">
       {/* رأس الصفحة */}
       <header className="py-16 px-6 bg-[#601a43] text-white">
         <div className="max-w-5xl mx-auto">
@@ -44,7 +44,7 @@ export default function FAQPage() {
       </header>
 
       {/* المحتوى */}
-      <main className="max-w-4xl mx-auto p-6 space-y-4">
+      <main className="flex-1 max-w-4xl mx-auto p-6 space-y-4">
         {faqs.map((faq, idx) => (
           <motion.div
             key={idx}
@@ -78,8 +78,8 @@ export default function FAQPage() {
         </Link>
       </footer>
 
-      {/* الفاصل السفلي */}
-      <div className="absolute bottom-4 left-0 right-0 text-center text-gray-500 text-sm">
+      {/* سطر الحقوق */}
+      <div className="text-center text-gray-500 text-sm pb-6">
         © {new Date().getFullYear()} مركز المصباح للتدريب المهني — جميع الحقوق محفوظة.
       </div>
     </div>
