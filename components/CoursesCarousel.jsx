@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { useApp } from "../context/AppContext"; // تأكد أن المسار صحيح
+import { useApp } from "@/context/AppContext";
 
 // إعداد Supabase
 const supabaseUrl = "https://kyazwzdyodysnmlqmljv.supabase.co";
