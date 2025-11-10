@@ -35,8 +35,12 @@ function CourseCard({ course, onClick }) {
         </p>
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            <span className="line-through text-gray-400 text-sm mr-2">{course.price}</span>
-            <span className="font-bold text-[#7a1353]">{course.discount}</span>
+            <span className="line-through text-gray-400 text-sm mr-2">
+  {isNaN(course.price) ? course.price : formatCurrency(course.price)}
+</span>
+<span className="font-bold text-[#7a1353]">
+  {isNaN(course.discount) ? course.discount : formatCurrency(course.discount)}
+</span>
           </div>
         </div>
       </div>
