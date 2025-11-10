@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { ShoppingCart, Search, Globe, DollarSign } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { useRouter } from "next/navigation";
 
 /* ======================= GlobalAnimations ======================= */
 function GlobalAnimations() {
@@ -25,7 +26,7 @@ function GlobalAnimations() {
 
 /* ======================= Header ======================= */
 export default function Header() {
-  const { currency, setCurrency, t } = useApp();
+  const { currency, setCurrency, t, lang, toggleLang } = useApp();
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
 
@@ -39,12 +40,10 @@ export default function Header() {
     localStorage.removeItem("user");
   };
 
-  const toggleCurrency = () => {
-    setCurrency(currency === "USD" ? "QAR" : "USD");
-  };
+  const toggleCurrency = () => setCurrency(currency === "USD" ? "QAR" : "USD");
 
   return (
-    <header className="sticky top-0 z-40" dir="rtl">
+    <header className="sticky top-0 z-40" dir={lang === "EN" ? "ltr" : "rtl"}>
       <GlobalAnimations />
 
       {/* Top Bar */}
@@ -62,15 +61,12 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <SearchButton />
             <CartButton />
-            <div className="flex items-center gap-3 text-sm">
-              <div
-                onClick={toggleCurrency}
-                className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer"
-              >
-                <DollarSign className="w-4 h-4" />
-                <span>{currency}</span>
-              </div>
-            </div>
+            <LangCurrencyFixed
+              currency={currency}
+              toggleCurrency={toggleCurrency}
+              lang={lang}
+              toggleLang={toggleLang}
+            />
           </div>
         </div>
       </div>
@@ -138,9 +134,7 @@ function SearchButton() {
     localStorage.setItem("searchQuery", query);
 
     const coursesSection = document.getElementById("courses-section");
-    if (coursesSection) {
-      coursesSection.scrollIntoView({ behavior: "smooth" });
-    }
+    if (coursesSection) coursesSection.scrollIntoView({ behavior: "smooth" });
 
     setOpen(false);
     setQuery("");
@@ -175,7 +169,7 @@ function SearchButton() {
 
 /* ======================= CartButton ======================= */
 function CartButton() {
-  const { currency, formatCurrency } = useApp();
+  const { currency, formatCurrency, t } = useApp();
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
 
@@ -184,7 +178,6 @@ function CartButton() {
     loadCart();
     window.addEventListener("storage", loadCart);
     window.addEventListener("cartUpdated", loadCart);
-
     return () => {
       window.removeEventListener("storage", loadCart);
       window.removeEventListener("cartUpdated", loadCart);
@@ -210,7 +203,7 @@ function CartButton() {
       cart
         .map((c, i) => `${i + 1}- ${c.title} (${formatCurrency(parseFloat(c.price.replace(/[^\d.]/g, "")))})`)
         .join("\n") +
-      `\n\nالسلة الإجمالية: ${formatCurrency(totalPrice)}`;
+      `\n\n${t("cart")} الإجمالي: ${formatCurrency(totalPrice)}`;
     window.open("https://wa.me/+97472041794?text=" + encodeURIComponent(message), "_blank");
   };
 
@@ -233,7 +226,9 @@ function CartButton() {
                     {c.category && <div className="text-xs text-gray-500">{c.category}</div>}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[#7b0b4c] font-semibold">{formatCurrency(parseFloat(c.price.replace(/[^\d.]/g, "")))}</span>
+                    <span className="text-[#7b0b4c] font-semibold">
+                      {formatCurrency(parseFloat(c.price.replace(/[^\d.]/g, "")))}
+                    </span>
                     <button onClick={() => handleRemove(c.id)} className="text-gray-400 hover:text-red-500 text-xs">
                       ✕
                     </button>
@@ -245,7 +240,10 @@ function CartButton() {
               <span>الإجمالي:</span>
               <span className="text-[#7b0b4c]">{formatCurrency(totalPrice)}</span>
             </div>
-            <button onClick={handleWhatsAppOrder} className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]">
+            <button
+              onClick={handleWhatsAppOrder}
+              className="w-full bg-[#25D366] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#1eb15a]"
+            >
               طلب عبر واتساب
             </button>
           </>
@@ -258,33 +256,38 @@ function CartButton() {
     <div className="relative">
       <button className="relative p-2 rounded-full hover:bg-gray-100" aria-label="السلة" onClick={() => setOpen(true)}>
         <ShoppingCart className="w-5 h-5 text-gray-700" />
-        {cart.length > 0 && <span className="absolute -top-1 -left-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">{cart.length}</span>}
+        {cart.length > 0 && (
+          <span className="absolute -top-1 -left-1 bg-[#7b0b4c] text-white text-xs rounded-full px-1.5">{cart.length}</span>
+        )}
       </button>
       {open && typeof window !== "undefined" && createPortal(modal, document.body)}
     </div>
   );
 }
 
-
 /* ======================= LangCurrencyFixed ======================= */
-
-function LangCurrencyFixed() {
+function LangCurrencyFixed({ currency, toggleCurrency, lang, toggleLang }) {
   return (
     <div className="flex items-center gap-3 text-sm">
-      <div className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+      <div
+        onClick={toggleCurrency}
+        className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer"
+      >
         <DollarSign className="w-4 h-4" />
-        <span>USD</span>
+        <span>{currency}</span>
       </div>
-      <div className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+      <div
+        onClick={toggleLang}
+        className="flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer"
+      >
         <Globe className="w-4 h-4" />
-        <span>AR</span>
+        <span>{lang}</span>
       </div>
     </div>
   );
 }
 
-/* LoginModal */
-
+/* ======================= LoginModal ======================= */
 function LoginModal({ mode, onClose, setAuthMode, setUser }) {
   const router = useRouter();
 
@@ -296,7 +299,6 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const users = [
       { name: "المدير العام", email: "alfathhamid599@gmail.com", password: "123456", role: "general_manager" },
       { name: "المدير التنفيذي", email: "fayhaalfatihhamida@gmail.com", password: "123456", role: "executive" },
@@ -306,7 +308,7 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
     const form = new FormData(e.target);
     const email = form.get("email");
     const password = form.get("password");
-    const foundUser = users.find(u => u.email === email && u.password === password);
+    const foundUser = users.find((u) => u.email === email && u.password === password);
 
     if (foundUser) {
       localStorage.setItem("user", JSON.stringify(foundUser));
@@ -324,21 +326,11 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
       onClick={onClose}
       dir="rtl"
     >
-      <div
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 left-3 text-gray-500 hover:text-gray-700"
-        >
-          ✕
-        </button>
-
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative animate-scale-in text-right" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-3 left-3 text-gray-500 hover:text-gray-700">✕</button>
         <h2 className="text-xl font-semibold text-center mb-4 text-[#7b0b4c]">
           {mode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
         </h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm mb-1">البريد الإلكتروني</label>
@@ -350,21 +342,11 @@ function LoginModal({ mode, onClose, setAuthMode, setUser }) {
               placeholder="example@mail.com"
             />
           </div>
-
           <div>
             <label className="block text-sm mb-1">كلمة المرور</label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
+            <input type="password" name="password" required className="w-full px-3 py-2 border rounded-lg" />
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]"
-          >
+          <button type="submit" className="w-full bg-[#7b0b4c] text-white py-2 rounded-lg font-medium hover:bg-[#5e0839]">
             {mode === "login" ? "تسجيل الدخول" : "تسجيل"}
           </button>
         </form>
