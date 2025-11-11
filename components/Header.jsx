@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { ShoppingCart, Search, Globe, DollarSign } from "lucide-react";
 import { useApp } from "../app/context/AppContext";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
+
 
 /* ======================= GlobalAnimations ======================= */
 function GlobalAnimations() {
@@ -123,49 +125,153 @@ export default function Header() {
   );
 }
 
-/* ======================= SearchButton ======================= */
-function SearchButton() {
+/* search button */
+
+
+// ✅ إعداد Supabase
+const supabaseUrl = "https://kyazwzdyodysnmlqmljv.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YXp3emR5b2R5c25tbHFtbGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjI4ODcsImV4cCI6MjA3NTc5ODg4N30.5oPcHui5y6onGAr9EYkq8fSihKeb4iC8LQFsLijIco4";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export default function SearchButton() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // ✅ البحث المباشر من Supabase
+  useEffect(() => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("courses")
+        .select("id, title, category")
+        .ilike("title", `%${query}%`)
+        .limit(6);
+
+      if (!error) {
+        setSuggestions(data || []);
+      } else {
+        console.error("خطأ في جلب نتائج البحث:", error);
+      }
+      setLoading(false);
+    }, 400); // انتظار نصف ثانية بعد التوقف عن الكتابة
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
+
+  // ✅ عند تنفيذ البحث الكامل
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
-    localStorage.setItem("searchQuery", query);
+    localStorage.setItem("searchQuery", query.toLowerCase());
+    scrollToCourses();
+  };
 
-    const coursesSection = document.getElementById("courses-section");
-    if (coursesSection) coursesSection.scrollIntoView({ behavior: "smooth" });
-
-    setOpen(false);
+  // ✅ عند الضغط على اقتراح
+  const handleSelect = (title) => {
+    localStorage.setItem("searchQuery", title.toLowerCase());
+    scrollToCourses();
     setQuery("");
+    setOpen(false);
+    setSuggestions([]);
+  };
+
+  // ✅ الانتقال إلى قسم الدورات
+  const scrollToCourses = () => {
+    const section = document.getElementById("courses-section");
+    if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div className="relative">
-      <button className="p-2 rounded-full hover:bg-gray-100" aria-label="بحث" onClick={() => setOpen((v) => !v)}>
+      {/* زر البحث */}
+      <button
+        className="p-2 rounded-full hover:bg-gray-100 focus:outline-none"
+        aria-label="بحث"
+        onClick={() => setOpen((v) => !v)}
+      >
         <Search className="w-5 h-5 text-gray-700" />
       </button>
 
+      {/* مربع البحث */}
       {open && (
-        <form
-          onSubmit={handleSearch}
-          className="absolute top-12 right-1/2 translate-x-1/2 bg-white border rounded-lg shadow p-3 flex gap-2 items-center animate-fade-in"
-        >
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="ابحث هنا..."
-            className="w-80 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
-          />
-          <button type="submit" className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]">
-            بحث
-          </button>
-        </form>
+        <div className="absolute top-12 right-0 sm:right-1/2 sm:translate-x-1/2 w-[90vw] sm:w-96 bg-white border rounded-lg shadow-lg p-3 animate-fade-in z-50">
+          <form onSubmit={handleSearch} className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="ابحث عن دورة..."
+              className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
+            />
+            <button
+              type="submit"
+              className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]"
+            >
+              بحث
+            </button>
+          </form>
+
+          {/* قائمة النتائج */}
+          {loading && (
+            <p className="text-gray-500 text-sm mt-2 px-2">جاري البحث...</p>
+          )}
+
+          {!loading && suggestions.length > 0 && (
+            <ul className="mt-2 border border-gray-100 rounded-lg shadow-sm max-h-60 overflow-y-auto">
+              {suggestions.map((course) => (
+                <li
+                  key={course.id}
+                  onClick={() => handleSelect(course.title)}
+                  className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 text-gray-700"
+                >
+                  <span className="font-semibold text-[#7b0b4c]">
+                    {course.title}
+                  </span>
+                  {course.category && (
+                    <span className="text-gray-500 text-xs ml-2">
+                      ({course.category})
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {!loading && query && suggestions.length === 0 && (
+            <p className="text-gray-400 text-sm mt-2 text-center">
+              لا توجد نتائج مطابقة
+            </p>
+          )}
+
+          <style jsx>{`
+            .animate-fade-in {
+              animation: fadeIn 0.25s ease;
+            }
+            @keyframes fadeIn {
+              from {
+                opacity: 0;
+                transform: translateY(-8px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
+        </div>
       )}
     </div>
   );
 }
+
 
 /* ======================= CartButton ======================= */
 function CartButton() {
