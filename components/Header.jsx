@@ -7,7 +7,6 @@ import { useApp } from "../app/context/AppContext";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
-
 /* ======================= GlobalAnimations ======================= */
 function GlobalAnimations() {
   useEffect(() => {
@@ -125,16 +124,14 @@ export default function Header() {
   );
 }
 
-/* search button */
-
-
 // ✅ إعداد Supabase
 const supabaseUrl = "https://kyazwzdyodysnmlqmljv.supabase.co";
 const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YXp3emR5b2R5c25tbHFtbGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjI4ODcsImV4cCI6MjA3NTc5ODg4N30.5oPcHui5y6onGAr9EYkq8fSihKeb4iC8LQFsLijIco4";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export default function SearchButton() {
+/* ======================= SearchButton ======================= */
+function SearchButton() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -172,25 +169,61 @@ export default function SearchButton() {
     if (!query.trim()) return;
     localStorage.setItem("searchQuery", query.toLowerCase());
     scrollToCourses();
+    setOpen(false);
   };
 
   // ✅ عند الضغط على اقتراح
-  const handleSelect = (title) => {
-    localStorage.setItem("searchQuery", title.toLowerCase());
-    scrollToCourses();
+  const handleSelect = (course) => {
+    localStorage.setItem("searchQuery", course.title.toLowerCase());
+    localStorage.setItem("selectedCourseId", course.id);
     setQuery("");
     setOpen(false);
     setSuggestions([]);
+    
+    // الانتقال إلى قسم الدورات
+    setTimeout(() => {
+      scrollToCourses();
+    }, 100);
   };
 
   // ✅ الانتقال إلى قسم الدورات
   const scrollToCourses = () => {
     const section = document.getElementById("courses-section");
-    if (section) section.scrollIntoView({ behavior: "smooth" });
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+      
+      // إذا كان هناك دورة محددة مختارة، قم بتمييزها
+      setTimeout(() => {
+        const selectedCourseId = localStorage.getItem("selectedCourseId");
+        if (selectedCourseId) {
+          const courseElement = document.getElementById(`course-${selectedCourseId}`);
+          if (courseElement) {
+            courseElement.scrollIntoView({ behavior: "smooth", block: "center" });
+            courseElement.classList.add("ring-2", "ring-[#7b0b4c]");
+            setTimeout(() => {
+              courseElement.classList.remove("ring-2", "ring-[#7b0b4c]");
+            }, 3000);
+          }
+          localStorage.removeItem("selectedCourseId");
+        }
+      }, 500);
+    }
   };
 
+  // ✅ إغلاق البحث عند النقر خارج المربع
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (open && !event.target.closest('.search-container')) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div className="relative search-container">
       {/* زر البحث */}
       <button
         className="p-2 rounded-full hover:bg-gray-100 focus:outline-none"
@@ -202,18 +235,19 @@ export default function SearchButton() {
 
       {/* مربع البحث */}
       {open && (
-        <div className="absolute top-12 right-0 sm:right-1/2 sm:translate-x-1/2 w-[90vw] sm:w-96 bg-white border rounded-lg shadow-lg p-3 animate-fade-in z-50">
-          <form onSubmit={handleSearch} className="flex gap-2 items-center">
+        <div className="absolute top-12 right-0 w-[90vw] max-w-sm bg-white border border-gray-200 rounded-xl shadow-xl p-4 animate-fade-in z-50">
+          <form onSubmit={handleSearch} className="flex gap-2 items-center mb-3">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="ابحث عن دورة..."
-              className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c] focus:border-transparent"
+              autoFocus
             />
             <button
               type="submit"
-              className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839]"
+              className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839] transition-colors"
             >
               بحث
             </button>
@@ -221,57 +255,48 @@ export default function SearchButton() {
 
           {/* قائمة النتائج */}
           {loading && (
-            <p className="text-gray-500 text-sm mt-2 px-2">جاري البحث...</p>
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#7b0b4c]"></div>
+            </div>
           )}
 
           {!loading && suggestions.length > 0 && (
-            <ul className="mt-2 border border-gray-100 rounded-lg shadow-sm max-h-60 overflow-y-auto">
+            <div className="border border-gray-100 rounded-lg overflow-hidden max-h-60 overflow-y-auto">
               {suggestions.map((course) => (
-                <li
+                <div
                   key={course.id}
-                  onClick={() => handleSelect(course.title)}
-                  className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 text-gray-700"
+                  onClick={() => handleSelect(course)}
+                  className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
                 >
-                  <span className="font-semibold text-[#7b0b4c]">
+                  <div className="font-medium text-[#7b0b4c] mb-1">
                     {course.title}
-                  </span>
+                  </div>
                   {course.category && (
-                    <span className="text-gray-500 text-xs ml-2">
-                      ({course.category})
-                    </span>
+                    <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full inline-block">
+                      {course.category}
+                    </div>
                   )}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
 
           {!loading && query && suggestions.length === 0 && (
-            <p className="text-gray-400 text-sm mt-2 text-center">
+            <div className="text-center py-4 text-gray-500 text-sm">
               لا توجد نتائج مطابقة
-            </p>
+            </div>
           )}
 
-          <style jsx>{`
-            .animate-fade-in {
-              animation: fadeIn 0.25s ease;
-            }
-            @keyframes fadeIn {
-              from {
-                opacity: 0;
-                transform: translateY(-8px);
-              }
-              to {
-                opacity: 1;
-                transform: translateY(0);
-              }
-            }
-          `}</style>
+          {!loading && !query && (
+            <div className="text-center py-4 text-gray-400 text-sm">
+              ابدأ بالكتابة للبحث عن الدورات
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
-
 
 /* ======================= CartButton ======================= */
 function CartButton() {
