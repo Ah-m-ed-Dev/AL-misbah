@@ -1,8 +1,8 @@
 import "./globals.css";
-import { Cairo } from "next/font/google";
+import { Tajawal } from "next/font/google";
 import { AppProvider } from "./context/AppContext";
 
-const cairo = Cairo({
+const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["400", "700"],
 });
@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className={`${cairo.className} bg-white text-gray-900`}>
+      <body className={`${tajawal.className} bg-white text-gray-900`}>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>
