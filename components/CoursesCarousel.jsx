@@ -9,18 +9,33 @@ const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YXp3emR5b2R5c25tbHFtbGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjI4ODcsImV4cCI6MjA3NTc5ODg4N30.5oPcHui5y6onGAr9EYkq8fSihKeb4iC8LQFsLijIco4";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// ✅ Toast مخصص
+// ✅ Toast مخصص ومحسّن
 function Toast({ message, onClose }) {
+  // تحديد اللون حسب نوع الرسالة
+  const getToastStyle = () => {
+    if (message.includes("✅")) {
+      return "bg-green-100 border-green-500 text-green-700";
+    } else if (message.includes("⚠️")) {
+      return "bg-yellow-100 border-yellow-500 text-yellow-700";
+    } else if (message.includes("❌")) {
+      return "bg-red-100 border-red-500 text-red-700";
+    }
+    return "bg-white border-gray-300 text-gray-800";
+  };
+
   useEffect(() => {
     const timer = setTimeout(onClose, 3000);
     return () => clearTimeout(timer);
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[1000]">
-      <div className="bg-white shadow-2xl border border-[#7a1353]/20 text-[#7a1353] font-semibold px-6 py-3 rounded-xl animate-fade-in scale-105 text-center">
+    <div className="fixed inset-x-0 top-8 flex justify-center z-[1000] px-4">
+      <div
+        className={`shadow-xl border font-semibold px-6 py-3 rounded-xl animate-fade-in text-center ${getToastStyle()}`}
+      >
         {message}
       </div>
+
       <style jsx>{`
         .animate-fade-in {
           animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2.7s;
@@ -28,27 +43,28 @@ function Toast({ message, onClose }) {
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: scale(0.95);
+            transform: translateY(-10px);
           }
           to {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0);
           }
         }
         @keyframes fadeOut {
           from {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0);
           }
           to {
             opacity: 0;
-            transform: scale(0.95);
+            transform: translateY(-10px);
           }
         }
       `}</style>
     </div>
   );
 }
+
 
 // -------- بطاقة الدورة --------
 function CourseCard({ course, onClick, formatCurrency }) {
