@@ -130,12 +130,14 @@ const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YXp3emR5b2R5c25tbHFtbGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjI4ODcsImV4cCI6MjA3NTc5ODg4N30.5oPcHui5y6onGAr9EYkq8fSihKeb4iC8LQFsLijIco4";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+
 /* ======================= SearchButton ======================= */
 function SearchButton() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // ✅ البحث المباشر من Supabase
   useEffect(() => {
@@ -148,7 +150,7 @@ function SearchButton() {
       setLoading(true);
       const { data, error } = await supabase
         .from("courses")
-        .select("id, title, category")
+        .select("id, title, category, slug")
         .ilike("title", `%${query}%`)
         .limit(6);
 
@@ -158,7 +160,7 @@ function SearchButton() {
         console.error("خطأ في جلب نتائج البحث:", error);
       }
       setLoading(false);
-    }, 400); // انتظار نصف ثانية بعد التوقف عن الكتابة
+    }, 400);
 
     return () => clearTimeout(delayDebounce);
   }, [query]);
@@ -168,45 +170,59 @@ function SearchButton() {
     e.preventDefault();
     if (!query.trim()) return;
     localStorage.setItem("searchQuery", query.toLowerCase());
-    scrollToCourses();
+    navigateToCourses();
     setOpen(false);
   };
 
   // ✅ عند الضغط على اقتراح
   const handleSelect = (course) => {
-    localStorage.setItem("searchQuery", course.title.toLowerCase());
-    localStorage.setItem("selectedCourseId", course.id);
     setQuery("");
     setOpen(false);
     setSuggestions([]);
     
-    // الانتقال إلى قسم الدورات
-    setTimeout(() => {
-      scrollToCourses();
-    }, 100);
+    // الانتقال إلى صفحة الدورة مباشرة
+    if (course.slug) {
+      router.push(`/courses/${course.slug}`);
+    } else {
+      // إذا لم يكن هناك slug، ننتقل إلى قسم الدورات ونميز الدورة
+      localStorage.setItem("selectedCourseId", course.id);
+      localStorage.setItem("searchQuery", course.title.toLowerCase());
+      navigateToCourses();
+    }
   };
 
   // ✅ الانتقال إلى قسم الدورات
-  const scrollToCourses = () => {
-    const section = document.getElementById("courses-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-      
-      // إذا كان هناك دورة محددة مختارة، قم بتمييزها
-      setTimeout(() => {
-        const selectedCourseId = localStorage.getItem("selectedCourseId");
-        if (selectedCourseId) {
-          const courseElement = document.getElementById(`course-${selectedCourseId}`);
-          if (courseElement) {
-            courseElement.scrollIntoView({ behavior: "smooth", block: "center" });
-            courseElement.classList.add("ring-2", "ring-[#7b0b4c]");
-            setTimeout(() => {
-              courseElement.classList.remove("ring-2", "ring-[#7b0b4c]");
-            }, 3000);
-          }
-          localStorage.removeItem("selectedCourseId");
-        }
-      }, 500);
+  const navigateToCourses = () => {
+    // الانتقال إلى صفحة الدورات
+    router.push('/courses');
+    
+    // بعد الانتقال، البحث عن الدورة المحددة وتمييزها
+    setTimeout(() => {
+      highlightSelectedCourse();
+    }, 1000);
+  };
+
+  // ✅ تمييز الدورة المحددة
+  const highlightSelectedCourse = () => {
+    const selectedCourseId = localStorage.getItem("selectedCourseId");
+    if (selectedCourseId) {
+      const courseElement = document.getElementById(`course-${selectedCourseId}`);
+      if (courseElement) {
+        // تمرير إلى العنصر
+        courseElement.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "center" 
+        });
+        
+        // إضافة تأثير تمييز
+        courseElement.classList.add("ring-4", "ring-[#7b0b4c]", "ring-opacity-50", "transition-all", "duration-500");
+        
+        // إزالة التمييز بعد 3 ثوان
+        setTimeout(() => {
+          courseElement.classList.remove("ring-4", "ring-[#7b0b4c]", "ring-opacity-50");
+        }, 3000);
+      }
+      localStorage.removeItem("selectedCourseId");
     }
   };
 
@@ -266,9 +282,9 @@ function SearchButton() {
                 <div
                   key={course.id}
                   onClick={() => handleSelect(course)}
-                  className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                  className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors group"
                 >
-                  <div className="font-medium text-[#7b0b4c] mb-1">
+                  <div className="font-medium text-[#7b0b4c] mb-1 group-hover:text-[#5e0839]">
                     {course.title}
                   </div>
                   {course.category && (
