@@ -1,14 +1,14 @@
 import "./globals.css";
-import { Tajawal } from "next/font/google";
+import { Almarai } from "next/font/google";
 import { AppProvider } from "./context/AppContext";
 
-const tajawal = Tajawal({
+const almarai = Almarai({
   subsets: ["arabic"],
   weight: ["400", "700"],
 });
 
 export const metadata = {
-  title: "موقعي التعليمي",
+  title: "مركز المصباح للتدريب ",
   description: "موقع تدريب ودورات أونلاين",
 };
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className={`${tajawal.className} bg-white text-gray-900`}>
+      <body className={`${almarai.className} bg-white text-gray-900`}>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>
