@@ -8,7 +8,7 @@ const cairo = Cairo({
 });
 
 export const metadata = {
-  title: "مركز المصباح للتدريب ",
+  title: "مركز المصباح للتدريب. ",
   description: "موقع تدريب ودورات أونلاين",
 };
 
