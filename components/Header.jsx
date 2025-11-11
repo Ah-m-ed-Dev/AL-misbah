@@ -249,65 +249,82 @@ function SearchButton() {
         <Search className="w-5 h-5 text-gray-700" />
       </button>
 
-      {/* مربع البحث */}
+      {/* مربع البحث - في المنتصف الآن */}
       {open && (
-        <div className="absolute top-12 right-0 w-[90vw] max-w-sm bg-white border border-gray-200 rounded-xl shadow-xl p-4 animate-fade-in z-50">
-          <form onSubmit={handleSearch} className="flex gap-2 items-center mb-3">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="ابحث عن دورة..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c] focus:border-transparent"
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839] transition-colors"
-            >
-              بحث
-            </button>
-          </form>
-
-          {/* قائمة النتائج */}
-          {loading && (
-            <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#7b0b4c]"></div>
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/20 backdrop-blur-sm animate-fade-in">
+          <div className="mx-4 w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-2xl p-4 animate-scale-in">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-[#7b0b4c]">ابحث عن الدورات</h3>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1 rounded-full hover:bg-gray-100 text-gray-500"
+              >
+                ✕
+              </button>
             </div>
-          )}
 
-          {!loading && suggestions.length > 0 && (
-            <div className="border border-gray-100 rounded-lg overflow-hidden max-h-60 overflow-y-auto">
-              {suggestions.map((course) => (
-                <div
-                  key={course.id}
-                  onClick={() => handleSelect(course)}
-                  className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors group"
-                >
-                  <div className="font-medium text-[#7b0b4c] mb-1 group-hover:text-[#5e0839]">
-                    {course.title}
-                  </div>
-                  {course.category && (
-                    <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full inline-block">
-                      {course.category}
-                    </div>
-                  )}
+            <form onSubmit={handleSearch} className="flex gap-2 items-center mb-3">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="اكتب اسم الدورة..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c] focus:border-transparent"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="bg-[#7b0b4c] text-white px-4 py-3 rounded-lg text-sm hover:bg-[#5e0839] transition-colors whitespace-nowrap"
+              >
+                بحث
+              </button>
+            </form>
+
+            {/* قائمة النتائج */}
+            {loading && (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7b0b4c]"></div>
+              </div>
+            )}
+
+            {!loading && suggestions.length > 0 && (
+              <div className="border border-gray-100 rounded-lg overflow-hidden max-h-72 overflow-y-auto">
+                <div className="px-3 py-2 text-xs text-gray-500 bg-gray-50 border-b">
+                  {suggestions.length} نتيجة
                 </div>
-              ))}
-            </div>
-          )}
+                {suggestions.map((course) => (
+                  <div
+                    key={course.id}
+                    onClick={() => handleSelect(course)}
+                    className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors group"
+                  >
+                    <div className="font-medium text-[#7b0b4c] mb-1 group-hover:text-[#5e0839]">
+                      {course.title}
+                    </div>
+                    {course.category && (
+                      <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full inline-block">
+                        {course.category}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
-          {!loading && query && suggestions.length === 0 && (
-            <div className="text-center py-4 text-gray-500 text-sm">
-              لا توجد نتائج مطابقة
-            </div>
-          )}
+            {!loading && query && suggestions.length === 0 && (
+              <div className="text-center py-6 text-gray-500 text-sm">
+                <div className="text-2xl mb-2">🔍</div>
+                لا توجد نتائج مطابقة لـ "{query}"
+              </div>
+            )}
 
-          {!loading && !query && (
-            <div className="text-center py-4 text-gray-400 text-sm">
-              ابدأ بالكتابة للبحث عن الدورات
-            </div>
-          )}
+            {!loading && !query && (
+              <div className="text-center py-6 text-gray-400 text-sm">
+                <div className="text-2xl mb-2">📚</div>
+                ابدأ بالكتابة للبحث عن الدورات المتاحة
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
