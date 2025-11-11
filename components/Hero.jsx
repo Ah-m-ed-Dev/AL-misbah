@@ -57,8 +57,8 @@ export default function Hero() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    // تمرير قيمة البحث إلى سكشن الدورات
-    const coursesSection = document.getElementById("courses-section");
+    // تمرير قيمة البحث إلى سكشن CoursesCarousel
+    const coursesSection = document.getElementById("CoursesCarousel");
     if (coursesSection) {
       coursesSection.scrollIntoView({ behavior: "smooth" });
       // تخزين قيمة البحث مؤقتاً لتصفية الدورات
@@ -76,9 +76,9 @@ export default function Hero() {
     setSearchQuery(course.title);
     setSuggestions([]);
     
-    // الانتقال إلى قسم الدورات
+    // الانتقال إلى قسم CoursesCarousel في نفس الصفحة
     setTimeout(() => {
-      const coursesSection = document.getElementById("courses-section");
+      const coursesSection = document.getElementById("CoursesCarousel");
       if (coursesSection) {
         coursesSection.scrollIntoView({ behavior: "smooth" });
         
@@ -86,19 +86,61 @@ export default function Hero() {
         setTimeout(() => {
           const selectedCourseId = localStorage.getItem("selectedCourseId");
           if (selectedCourseId) {
-            const courseElement = document.getElementById(`course-${selectedCourseId}`);
-            if (courseElement) {
-              courseElement.scrollIntoView({ behavior: "smooth", block: "center" });
-              courseElement.classList.add("ring-2", "ring-[#7b0b4c]");
-              setTimeout(() => {
-                courseElement.classList.remove("ring-2", "ring-[#7b0b4c]");
-              }, 3000);
-            }
-            localStorage.removeItem("selectedCourseId");
+            highlightAndScrollToCourse(selectedCourseId);
           }
-        }, 500);
+        }, 800); // زيادة الوقت لضمان تحميل الكاروسيل
       }
     }, 100);
+  };
+
+  // ✅ وظيفة للتمرير وتمييز الدورة في الكاروسيل
+  const highlightAndScrollToCourse = (courseId) => {
+    // محاولة العثور على العنصر عدة مرات لأن الكاروسيل قد يحتاج وقت للتحميل
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    const tryFindCourse = () => {
+      const courseElement = document.getElementById(`course-${courseId}`);
+      
+      if (courseElement) {
+        // التمرير إلى الدورة في الكاروسيل
+        courseElement.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "nearest",
+          inline: "center"
+        });
+        
+        // إضافة تأثير التمييز
+        courseElement.classList.add(
+          "ring-4", 
+          "ring-[#7b0b4c]", 
+          "ring-opacity-70", 
+          "scale-105",
+          "transition-all", 
+          "duration-500"
+        );
+        
+        // إزالة التمييز بعد 4 ثوان
+        setTimeout(() => {
+          courseElement.classList.remove(
+            "ring-4", 
+            "ring-[#7b0b4c]", 
+            "ring-opacity-70", 
+            "scale-105"
+          );
+        }, 4000);
+        
+        localStorage.removeItem("selectedCourseId");
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(tryFindCourse, 200); // المحاولة مرة أخرى بعد 200ms
+      } else {
+        console.log("لم يتم العثور على الدورة في الكاروسيل");
+        localStorage.removeItem("selectedCourseId");
+      }
+    };
+
+    tryFindCourse();
   };
 
   return (
