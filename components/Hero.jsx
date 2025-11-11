@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 // ✅ إعداد Supabase
@@ -11,6 +11,21 @@ export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  // ✅ إغلاق القائمة عند النقر خارجها
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setSuggestions([]);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // ✅ البحث المباشر من Supabase مع الاقتراحات
   useEffect(() => {
@@ -49,6 +64,9 @@ export default function Hero() {
       // تخزين قيمة البحث مؤقتاً لتصفية الدورات
       localStorage.setItem("searchQuery", searchQuery);
     }
+    
+    // إغلاق القائمة بعد البحث
+    setSuggestions([]);
   };
 
   // ✅ عند الضغط على اقتراح من القائمة
@@ -104,7 +122,7 @@ export default function Hero() {
           </p>
 
           {/* مربع البحث مع الاقتراحات */}
-          <div className="w-full max-w-md relative">
+          <div className="w-full max-w-md relative" ref={searchContainerRef}>
             <form onSubmit={handleSearch} className="w-full flex gap-2">
               <div className="flex-1 relative">
                 <input
@@ -156,7 +174,7 @@ export default function Hero() {
             )}
 
             {searchQuery && !loading && suggestions.length === 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 text-center text-gray-500 text-sm">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 text-center text-gray-500 text-sm z-50">
                 لا توجد نتائج مطابقة لـ "{searchQuery}"
               </div>
             )}
