@@ -137,7 +137,6 @@ function SearchButton() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   // ✅ البحث المباشر من Supabase
   useEffect(() => {
@@ -148,12 +147,16 @@ function SearchButton() {
 
     const delayDebounce = setTimeout(async () => {
       setLoading(true);
+      console.log('🔍 جاري البحث عن:', query); // للتحقق
+      
       const { data, error } = await supabase
         .from("courses")
-        .select("id, title, category, slug")
+        .select("id, title, category")
         .ilike("title", `%${query}%`)
         .limit(6);
 
+      console.log('📊 نتائج البحث:', data); // للتحقق
+      
       if (!error) {
         setSuggestions(data || []);
       } else {
@@ -170,59 +173,45 @@ function SearchButton() {
     e.preventDefault();
     if (!query.trim()) return;
     localStorage.setItem("searchQuery", query.toLowerCase());
-    navigateToCourses();
+    scrollToCourses();
     setOpen(false);
   };
 
   // ✅ عند الضغط على اقتراح
   const handleSelect = (course) => {
+    localStorage.setItem("searchQuery", course.title.toLowerCase());
+    localStorage.setItem("selectedCourseId", course.id);
     setQuery("");
     setOpen(false);
     setSuggestions([]);
     
-    // الانتقال إلى صفحة الدورة مباشرة
-    if (course.slug) {
-      router.push(`/courses/${course.slug}`);
-    } else {
-      // إذا لم يكن هناك slug، ننتقل إلى قسم الدورات ونميز الدورة
-      localStorage.setItem("selectedCourseId", course.id);
-      localStorage.setItem("searchQuery", course.title.toLowerCase());
-      navigateToCourses();
-    }
+    // الانتقال إلى قسم الدورات
+    setTimeout(() => {
+      scrollToCourses();
+    }, 100);
   };
 
   // ✅ الانتقال إلى قسم الدورات
-  const navigateToCourses = () => {
-    // الانتقال إلى صفحة الدورات
-    router.push('/courses');
-    
-    // بعد الانتقال، البحث عن الدورة المحددة وتمييزها
-    setTimeout(() => {
-      highlightSelectedCourse();
-    }, 1000);
-  };
-
-  // ✅ تمييز الدورة المحددة
-  const highlightSelectedCourse = () => {
-    const selectedCourseId = localStorage.getItem("selectedCourseId");
-    if (selectedCourseId) {
-      const courseElement = document.getElementById(`course-${selectedCourseId}`);
-      if (courseElement) {
-        // تمرير إلى العنصر
-        courseElement.scrollIntoView({ 
-          behavior: "smooth", 
-          block: "center" 
-        });
-        
-        // إضافة تأثير تمييز
-        courseElement.classList.add("ring-4", "ring-[#7b0b4c]", "ring-opacity-50", "transition-all", "duration-500");
-        
-        // إزالة التمييز بعد 3 ثوان
-        setTimeout(() => {
-          courseElement.classList.remove("ring-4", "ring-[#7b0b4c]", "ring-opacity-50");
-        }, 3000);
-      }
-      localStorage.removeItem("selectedCourseId");
+  const scrollToCourses = () => {
+    const section = document.getElementById("courses-section");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+      
+      // إذا كان هناك دورة محددة مختارة، قم بتمييزها
+      setTimeout(() => {
+        const selectedCourseId = localStorage.getItem("selectedCourseId");
+        if (selectedCourseId) {
+          const courseElement = document.getElementById(`course-${selectedCourseId}`);
+          if (courseElement) {
+            courseElement.scrollIntoView({ behavior: "smooth", block: "center" });
+            courseElement.classList.add("ring-2", "ring-[#7b0b4c]");
+            setTimeout(() => {
+              courseElement.classList.remove("ring-2", "ring-[#7b0b4c]");
+            }, 3000);
+          }
+          localStorage.removeItem("selectedCourseId");
+        }
+      }, 500);
     }
   };
 
@@ -258,6 +247,7 @@ function SearchButton() {
               <button
                 onClick={() => setOpen(false)}
                 className="p-1 rounded-full hover:bg-gray-100 text-gray-500"
+                aria-label="إغلاق البحث"
               >
                 ✕
               </button>
@@ -269,12 +259,12 @@ function SearchButton() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="اكتب اسم الدورة..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c] focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7b0b4c] focus:border-transparent"
                 autoFocus
               />
               <button
                 type="submit"
-                className="bg-[#7b0b4c] text-white px-4 py-3 rounded-lg text-sm hover:bg-[#5e0839] transition-colors whitespace-nowrap"
+                className="bg-[#7b0b4c] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#5e0839] transition-colors whitespace-nowrap"
               >
                 بحث
               </button>
@@ -282,13 +272,13 @@ function SearchButton() {
 
             {/* قائمة النتائج */}
             {loading && (
-              <div className="flex justify-center py-6">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7b0b4c]"></div>
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#7b0b4c]"></div>
               </div>
             )}
 
             {!loading && suggestions.length > 0 && (
-              <div className="border border-gray-100 rounded-lg overflow-hidden max-h-72 overflow-y-auto">
+              <div className="border border-gray-100 rounded-lg overflow-hidden max-h-60 overflow-y-auto">
                 <div className="px-3 py-2 text-xs text-gray-500 bg-gray-50 border-b">
                   {suggestions.length} نتيجة
                 </div>
@@ -312,14 +302,14 @@ function SearchButton() {
             )}
 
             {!loading && query && suggestions.length === 0 && (
-              <div className="text-center py-6 text-gray-500 text-sm">
+              <div className="text-center py-4 text-gray-500 text-sm">
                 <div className="text-2xl mb-2">🔍</div>
                 لا توجد نتائج مطابقة لـ "{query}"
               </div>
             )}
 
             {!loading && !query && (
-              <div className="text-center py-6 text-gray-400 text-sm">
+              <div className="text-center py-4 text-gray-400 text-sm">
                 <div className="text-2xl mb-2">📚</div>
                 ابدأ بالكتابة للبحث عن الدورات المتاحة
               </div>
