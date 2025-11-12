@@ -7,6 +7,7 @@ const supabaseUrl = "https://kyazwzdyodysnmlqmljv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YXp3emR5b2R5c25tbHFtbGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyMjI4ODcsImV4cCI6MjA3NTc5ODg4N30.5oPcHui5y6onGAr9EYkq8fSihKeb4iC8LQFsLijIco4";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+import { useState } from "react";
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -163,66 +164,52 @@ export default function Hero() {
             تعلّم.. طوِّر.. وحقق نجاحك مع مركز المصباح للتدريب الفني والعمالة
           </p>
 
-          {/* مربع البحث مع الاقتراحات */}
-          <div className="w-full max-w-md relative" ref={searchContainerRef}>
-            <form onSubmit={handleSearch} className="w-full flex gap-2">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  placeholder="ابحث عن دورة..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-white focus:outline-none focus:ring-2 focus:ring-[#7b0b4c]"
-                />
-                
-                {/* مؤشر التحميل */}
-                {loading && (
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#7b0b4c]"></div>
-                  </div>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="bg-[#7b0b4c] text-white px-4 py-3 rounded-2xl hover:bg-[#5e0839] transition-colors whitespace-nowrap"
-              >
-                بحث
-              </button>
-            </form>
 
-            {/* قائمة الاقتراحات */}
-            {suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-60 overflow-y-auto">
-                <div className="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b">
-                  {suggestions.length} نتيجة
-                </div>
-                {suggestions.map((course) => (
-                  <div
-                    key={course.id}
-                    onClick={() => handleSelect(course)}
-                    className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors group"
-                  >
-                    <div className="font-medium text-[#7b0b4c] mb-1 group-hover:text-[#5e0839]">
-                      {course.title}
-                    </div>
-                    {course.category && (
-                      <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full inline-block">
-                        {course.category}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
 
-            {searchQuery && !loading && suggestions.length === 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 text-center text-gray-500 text-sm z-50">
-                لا توجد نتائج مطابقة لـ "{searchQuery}"
-              </div>
-            )}
-          </div>
-        </div>
+function SearchBar() {
+  const [query, setQuery] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault(); // لمنع إعادة تحميل الصفحة
+    if (!query.trim()) return;
+
+    // هنا ضع منطق البحث الحقيقي مثلاً:
+    alert(`جاري البحث عن: ${query}`);
+
+    // يمكنك استبدال alert بـ:
+    // router.push(`/search?query=${encodeURIComponent(query)}`);
+    // أو استدعاء API للبحث عن النتائج
+  };
+
+  return (
+    <form
+      onSubmit={handleSearch}
+      className="mt-6 w-full max-w-md"
+    >
+      <div className="relative">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="ابحث عن..."
+          className="w-full rounded-2xl bg-white/95 shadow-lg focus:outline-none focus:ring-4 focus:ring-[#7b0b4c]/40 px-14 py-4 text-lg placeholder-gray-400"
+        />
+
+        <button
+          type="submit"
+          className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#7b0b4c]"
+          aria-label="بحث"
+        >
+          <svg viewBox="0 0 24 24" className="w-6 h-6">
+            <path
+              fill="currentColor"
+              d="M10 2a8 8 0 1 1 5.293 13.707l4 4-1.414 1.414-4-4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"
+            />
+          </svg>
+        </button>
       </div>
-    </section>
+    </form>
   );
 }
+
+export default SearchBar;
